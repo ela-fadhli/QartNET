@@ -43,16 +43,19 @@ By integrating these components into a single platform, QartNET aims to improve 
 
 QartNET follows a **scalable layered architecture**:
 
-* **Frontend:** Angular
+* **Frontend:** Angular 21+
+* **UI Library:** PrimeNG 21
+* **Styling:** Tailwind css v4
 * **Backend:** Spring Boot (REST API)
 * **Databases:** PostgreSQL (+ MongoDB)
 * **Version Control Integration:** Git
 * **Real-time Communication:** WebSockets
+* **Build:** Maven (backend) · Angular CLI (frontend)
 * **Deployment:** Cloud-ready, scalable infrastructure
 
 ---
 
-## 👨‍💻 Team
+## Team
 
 | Name          | Role      | Responsibilities                                  |
 | ------------- | --------- | ------------------------------------------------- |
@@ -73,7 +76,7 @@ National Engineering School of Carthage (ENICarthage) — Computer Science Depar
 
 ## Contributing
 
-Contributions are governed by the guidelines defined in CONTRIBUTING.md.
+Contributions are governed by the guidelines defined in the [CONTRIBUTING GUIDLINES](Contributing.md).
 
 ---
 
