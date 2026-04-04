@@ -1,12 +1,18 @@
 package tn.enicarthage.qartnet.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "users")
 public class User {
