@@ -23,7 +23,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './sign-in.html',
   styleUrl: './sign-in.css',
 })
-export class SignInComponent {
+export class SignIn {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);

@@ -42,8 +42,10 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

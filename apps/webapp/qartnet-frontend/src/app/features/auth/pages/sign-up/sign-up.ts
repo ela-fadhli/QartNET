@@ -38,7 +38,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.css',
 })
-export class SignUpComponent {
+export class SignUp {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
