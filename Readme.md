@@ -45,7 +45,7 @@ QartNET follows a **scalable layered architecture**:
 
 * **Frontend:** Angular 21+
 * **UI Library:** PrimeNG 21
-* **Styling:** Tailwind css v4
+* **Styling:** Tailwind CSS v4
 * **Backend:** Spring Boot (REST API)
 * **Databases:** PostgreSQL (+ MongoDB)
 * **Version Control Integration:** Git
@@ -76,13 +76,13 @@ National Engineering School of Carthage (ENICarthage) — Computer Science Depar
 
 ## Contributing
 
-Contributions are governed by the guidelines defined in the [CONTRIBUTING GUIDLINES](Contributing.md).
+Contributions are governed by the guidelines defined in the [CONTRIBUTING GUIDELINES](Contributing.md).
 
 ---
 
 ## Vision
 
-QartNET is designed to evolve into a **full academic collaboration ecosystem** for engineering and digital innovation. once the platform reaches a stable and mature stage, contributions will be opened to students of the institution. This initiative aims to provide a real-world development environment where students can apply their technical skills, gain practical experience, and learn to collaborate within a professional framework.
+QartNET is designed to evolve into a **full academic collaboration ecosystem** for engineering and digital innovation. Once the platform reaches a stable and mature stage, contributions will be opened to students of the institution. This initiative aims to provide a real-world development environment where students can apply their technical skills, gain practical experience, and learn to collaborate within a professional framework.
 
 Contributors will work on the platform under the guidance of alumni and experienced members, fostering mentorship, knowledge transfer, and a strong engineering culture within the academic community.
 

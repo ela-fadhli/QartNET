@@ -1,0 +1,52 @@
+:host ::ng-deep .auth-input {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(201, 168, 76, 0.2) !important;
+  border-radius: 6px !important;
+  color: #E8D5A3 !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 0.875rem !important;
+  padding: 0.65rem 0.875rem !important;
+  width: 100% !important;
+  transition: border-color 0.2s !important;
+}
+
+:host ::ng-deep .auth-input::placeholder {
+  color: rgba(232, 213, 163, 0.25) !important;
+}
+
+:host ::ng-deep .auth-input:focus {
+  border-color: rgba(201, 168, 76, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08) !important;
+  outline: none !important;
+}
+
+:host ::ng-deep .auth-input.input-error {
+  border-color: rgba(224, 112, 112, 0.5) !important;
+}
+
+:host ::ng-deep .p-password {
+  width: 100%;
+}
+
+:host ::ng-deep .auth-btn {
+  width: 100% !important;
+  background: #C9A84C !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #0A0E1A !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  padding: 0.75rem !important;
+  letter-spacing: 0.03em !important;
+  transition: background 0.2s, transform 0.1s !important;
+  justify-content: center !important;
+}
+
+:host ::ng-deep .auth-btn:hover:not(:disabled) {
+  background: #D4B55A !important;
+}
+
+:host ::ng-deep .auth-btn:active {
+  transform: scale(0.99) !important;
+}
