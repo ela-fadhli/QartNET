@@ -2,6 +2,7 @@ package tn.enicarthage.qartnet.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.UserRepository;
 import tn.enicarthage.qartnet.security.JwtService;
 import tn.enicarthage.qartnet.service.IAuthService;
+import tn.enicarthage.qartnet.shared.exception.ConflictException;
 
 import java.util.UUID;
 
@@ -27,7 +29,10 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already in use");
+            throw new ConflictException("Email is already in use");
+        }
+        if (userRepository.existsByUsername(request.username())) {
+            throw new ConflictException("Username is already taken");
         }
 
         User user = new User();
@@ -43,7 +48,8 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
 
 
