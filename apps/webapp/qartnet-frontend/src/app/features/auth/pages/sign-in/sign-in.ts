@@ -54,11 +54,10 @@ export class SignIn {
 
     this.authService.login(this.form.value as any).subscribe({
       next: (res) => {
-        this.authService.saveToken(res.token);
         this.router.navigate(['/']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message ?? 'Invalid credentials. Please try again.';
+        this.errorMessage = err.userMessage ?? 'Invalid credentials. Please try again.';
         this.loading = false;
       },
     });

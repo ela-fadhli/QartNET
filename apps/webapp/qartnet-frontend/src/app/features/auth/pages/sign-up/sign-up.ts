@@ -88,7 +88,7 @@ export class SignUp {
           this.router.navigate(['/']);
         },
         error: (err) => {
-          this.errorMessage = err.error?.message ?? 'Registration failed. Please try again.';
+          this.errorMessage = err.userMessage ?? 'Registration failed. Please try again.';
           this.loading = false;
         },
       });

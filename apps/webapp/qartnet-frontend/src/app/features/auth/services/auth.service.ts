@@ -11,9 +11,13 @@ export class AuthService {
   private baseUrl = `${environment.apiUrl}/api/auth`;
 
   login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http
-      .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, request)
-      .pipe(map((res) => res.data!));
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, request).pipe(
+      map((res) => {
+        const data = res.data!;
+        this.saveToken(data.token);
+        return data;
+      }),
+    );
   }
 
   register(request: RegisterRequest): Observable<AuthResponse> {
