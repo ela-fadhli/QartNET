@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { LoginRequest, RegisterRequest, AuthResponse, ApiResponse } from '../models/auth.models';
+import { LoginRequest, RegisterRequest, AuthResponse, ApiResponse, ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +24,18 @@ export class AuthService {
     return this.http
       .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/register`, request)
       .pipe(map((res) => res.data!));
+  }
+
+  forgotPassword(request: ForgotPasswordRequest): Observable<void> {
+    return this.http
+      .post<ApiResponse<void>>(`${this.baseUrl}/forgot-password`, request)
+      .pipe(map(() => void 0));
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<void> {
+    return this.http
+      .post<ApiResponse<void>>(`${this.baseUrl}/reset-password`, request)
+      .pipe(map(() => void 0));
   }
 
   saveToken(token: string): void {
