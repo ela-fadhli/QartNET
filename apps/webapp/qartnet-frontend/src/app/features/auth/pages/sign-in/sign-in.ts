@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
@@ -7,12 +6,12 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../models/auth.models';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterLink,
     InputTextModule,
@@ -21,9 +20,8 @@ import { AuthService } from '../../services/auth.service';
     MessageModule,
   ],
   templateUrl: './sign-in.html',
-  styleUrl: './sign-in.css',
 })
-export class SignIn {
+export class AuthSignInComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -52,7 +50,10 @@ export class SignIn {
     this.loading = true;
     this.errorMessage = null;
 
-    this.authService.login(this.form.value as any).subscribe({
+    const { email, password } = this.form.value;
+    const payload: LoginRequest = { email: email!, password: password! };
+
+    this.authService.login(payload).subscribe({
       next: (res) => {
         this.router.navigate(['/']);
       },
