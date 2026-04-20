@@ -1,4 +1,4 @@
-<div class="auth-layout">
+<div class="grid grid-cols-2 min-h-screen bg-[#0A0E1A] max-md:grid-cols-1">
 
   <div class="auth-brand">
     <div class="mb-5">
@@ -13,25 +13,27 @@
       </svg>
     </div>
 
-    <h1 class="brand-name">QartNET</h1>
-    <p class="brand-tagline">Qart Hadasht Network for Engineering & Technology</p>
+    <h1 class="font-['Cinzel',serif] text-[2.5rem] font-bold text-[#E8D5A3] tracking-[0.08em] m-0 mb-2">QartNET</h1>
+    <p class="font-['DM_Sans',sans-serif] text-[0.75rem] text-[#C9A84C]/60 tracking-[0.04em] uppercase mb-12 leading-relaxed m-0">
+      Qart Hadasht Network for Engineering &amp; Technology
+    </p>
 
     <div class="flex flex-col gap-4 mb-auto">
-      <div class="feature-item">
-        <span class="feature-dot"></span>
+      <div class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/65 flex items-center gap-3">
+        <span class="w-[5px] h-[5px] rounded-full bg-[#C9A84C] shrink-0"></span>
         Academic Social Network
       </div>
-      <div class="feature-item">
-        <span class="feature-dot"></span>
+      <div class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/65 flex items-center gap-3">
+        <span class="w-[5px] h-[5px] rounded-full bg-[#C9A84C] shrink-0"></span>
         Git-Based Project Hosting
       </div>
-      <div class="feature-item">
-        <span class="feature-dot"></span>
+      <div class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/65 flex items-center gap-3">
+        <span class="w-[5px] h-[5px] rounded-full bg-[#C9A84C] shrink-0"></span>
         Collaborative Project Management
       </div>
     </div>
 
-    <div class="brand-footer">
+    <div class="font-['DM_Sans',sans-serif] text-[0.7rem] text-[#C9A84C]/35 flex justify-between pt-8 border-t border-[#C9A84C]/10 mt-12">
       <span>ENICarthage · Computer Science Department</span>
       <span>2025–2026</span>
     </div>
@@ -41,8 +43,8 @@
     <div class="w-full max-w-[420px]">
 
       <div class="mb-8">
-        <h2 class="card-heading">Welcome back</h2>
-        <p class="card-subheading">Sign in to your QartNET account</p>
+        <h2 class="font-['Cinzel',serif] text-[1.75rem] font-semibold text-[#E8D5A3] m-0 mb-[0.4rem] tracking-[0.03em]">Welcome back</h2>
+        <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/40 m-0">Sign in to your QartNET account</p>
       </div>
 
       @if (errorMessage) {
@@ -52,7 +54,7 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
 
         <div class="flex flex-col gap-1.5">
-          <label class="field-label" for="email">Email address</label>
+          <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="email">Email address</label>
           <input
             pInputText
             id="email"
@@ -63,14 +65,14 @@
             [class.input-error]="email.invalid && email.touched"
           />
           @if (email.invalid && email.touched) {
-            <small class="error-text">
+            <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">
               {{ email.hasError('required') ? 'Email is required' : 'Enter a valid email address' }}
             </small>
           }
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="field-label" for="password">Password</label>
+          <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="password">Password</label>
           <p-password
             inputId="password"
             formControlName="password"
@@ -82,8 +84,14 @@
             [class.input-error]="password.invalid && password.touched"
           />
           @if (password.invalid && password.touched) {
-            <small class="error-text">Password is required</small>
+            <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">Password is required</small>
           }
+        </div>
+
+        <div class="flex justify-end">
+          <a routerLink="/auth/forgot-password" class="font-['DM_Sans',sans-serif] text-[0.75rem] text-[#C9A84C] no-underline hover:underline">
+            Forgot password?
+          </a>
         </div>
 
         <p-button
@@ -95,9 +103,9 @@
 
       </form>
 
-      <p class="mt-6 text-center text-sm" style="color: rgba(232,213,163,0.4)">
+      <p class="mt-6 text-center font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/40">
         Don't have an account?
-        <a routerLink="/auth/sign-up" class="auth-link">Create one</a>
+        <a routerLink="/auth/sign-up" class="text-[#C9A84C] no-underline ml-1.5 font-medium hover:underline">Create one</a>
       </p>
 
     </div>
