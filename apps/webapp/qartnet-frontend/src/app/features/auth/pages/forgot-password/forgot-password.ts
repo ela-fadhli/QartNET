@@ -1,44 +1,31 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/auth.service';
-import { LoginRequest } from '../../models/auth.models';
 
 @Component({
-  selector: 'app-sign-in',
+  selector: 'app-forgot-password',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    InputTextModule,
-    PasswordModule,
-    ButtonModule,
-    MessageModule,
-  ],
-  templateUrl: './sign-in.html',
+  imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule],
+  templateUrl: './forgot-password.html',
 })
-export class AuthSignInComponent {
+export class AuthForgotPasswordComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   loading = false;
+  submitted = false;
   errorMessage: string | null = null;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
   });
 
   get email() {
     return this.form.get('email')!;
-  }
-  get password() {
-    return this.form.get('password')!;
   }
 
   onSubmit(): void {
@@ -50,15 +37,15 @@ export class AuthSignInComponent {
     this.loading = true;
     this.errorMessage = null;
 
-    const { email, password } = this.form.value;
-    const payload: LoginRequest = { email: email!, password: password! };
+    const { email } = this.form.value;
 
-    this.authService.login(payload).subscribe({
-      next: (res) => {
-        this.router.navigate(['/']);
+    this.authService.forgotPassword({ email: email! }).subscribe({
+      next: () => {
+        this.submitted = true;
+        this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = err.userMessage ?? 'Invalid credentials. Please try again.';
+        this.errorMessage = err.userMessage ?? 'Something went wrong. Please try again.';
         this.loading = false;
       },
     });

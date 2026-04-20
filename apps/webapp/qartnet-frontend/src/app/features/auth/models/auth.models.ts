@@ -1,3 +1,5 @@
+export type { ApiResponse } from '../../../shared/models/api-response.model';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -13,9 +15,11 @@ export interface AuthResponse {
   token: string;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string | null;
-  data: T | null;
-  timestamp: string;
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
 }

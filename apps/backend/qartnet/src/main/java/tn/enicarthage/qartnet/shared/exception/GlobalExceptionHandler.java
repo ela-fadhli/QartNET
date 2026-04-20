@@ -1,6 +1,7 @@
 package tn.enicarthage.qartnet.shared.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.mail.MailException;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleConflict(ConflictException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    // 500 — email delivery failure
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMailException(MailException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Failed to send email. Please try again later."));
     }
 
     // 500 — catch-all, never expose internals

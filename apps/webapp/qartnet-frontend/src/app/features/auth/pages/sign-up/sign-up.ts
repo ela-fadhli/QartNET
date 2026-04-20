@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -27,7 +26,6 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   selector: 'app-sign-up',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterLink,
     InputTextModule,
@@ -36,9 +34,8 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     MessageModule,
   ],
   templateUrl: './sign-up.html',
-  styleUrl: './sign-up.css',
 })
-export class SignUp {
+export class AuthSignUpComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
