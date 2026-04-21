@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -25,13 +26,18 @@ public class User {
     private UUID publicId;
 
     @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
+
+    private String firstName;
+
+    private String lastName;
+
+    private LocalDate dateOfBirth;
+
+    private String phoneNumber;
 
     private boolean emailVerified = false;
 
@@ -41,6 +47,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private Profile profile;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -48,7 +57,6 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-
         if (publicId == null) {
             publicId = UUID.randomUUID();
         }
