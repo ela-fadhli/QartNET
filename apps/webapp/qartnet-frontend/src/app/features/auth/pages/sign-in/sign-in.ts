@@ -55,7 +55,7 @@ export class AuthSignInComponent {
 
     this.authService.login(payload).subscribe({
       next: (res) => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/profile/me']);
       },
       error: (err) => {
         this.errorMessage = err.userMessage ?? 'Invalid credentials. Please try again.';

@@ -6,7 +6,10 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  username: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth?: string;
+  phoneNumber?: string;
   email: string;
   password: string;
 }
