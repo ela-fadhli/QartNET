@@ -1,0 +1,140 @@
+<div class="flex min-h-screen bg-white">
+
+  <!-- Left Side: Branding -->
+  <div class="hidden lg:flex w-1/2 bg-primary-600 text-white p-12 flex-col justify-between"
+    style="background-color: var(--p-primary-500);">
+    <div>
+      <div class="flex items-center gap-3 text-xl font-bold mb-20 tracking-wider">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="6" cy="6" r="3"></circle>
+          <circle cx="18" cy="6" r="3"></circle>
+          <path d="M6 9v6"></path>
+          <path d="M9 18h3a3 3 0 0 0 3-3v-6"></path>
+        </svg>
+        QARTNET
+      </div>
+
+      <h1 class="text-5xl font-bold leading-tight mb-8 pr-12">Join the academic<br>developer community.</h1>
+      <p class="text-lg text-primary-100 mb-12 pr-12" style="color: rgba(255,255,255,0.85);">
+        Create an account to start collaborating on projects, sharing code, and learning together with peers and
+        professors.
+      </p>
+
+      <ul class="flex flex-col gap-5 text-md font-medium" style="color: rgba(255,255,255,0.85);">
+        <li class="flex items-center gap-3">
+          <div class="w-1.5 h-1.5 bg-white rounded-full"></div> Host and manage Git repositories
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-1.5 h-1.5 bg-white rounded-full"></div> Collaborate with structured project phases
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-1.5 h-1.5 bg-white rounded-full"></div> Get feedback and code reviews from professors
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-1.5 h-1.5 bg-white rounded-full"></div> Engage in technical discussions and forums
+        </li>
+      </ul>
+    </div>
+    <div class="text-sm font-medium" style="color: rgba(255,255,255,0.5);">
+      QARTNET - Academic Collaborative Platform
+    </div>
+  </div>
+
+  <!-- Right Side: Register Form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto pt-16 pb-16 lg:pt-8 lg:pb-8">
+    <div class="w-full max-w-md">
+      <p-card styleClass="p-6 md:p-8 shadow-sm rounded-2xl border border-surface-200 bg-white">
+
+        <div class="text-center mb-8">
+          <h1 class="text-2xl font-bold text-surface-900 mb-2">Create your account</h1>
+          <p class="text-surface-500 text-sm">Use your institutional email to get started</p>
+        </div>
+
+        @if (successMessage) {
+        <p-message severity="success" [text]="successMessage" styleClass="w-full mb-6"></p-message>
+        <div class="text-center mt-6">
+          <p-button label="Sign In" routerLink="/login" styleClass="w-full rounded-lg font-semibold"></p-button>
+        </div>
+        } @else {
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+
+          <div class="flex gap-4">
+            <div class="flex flex-col gap-1.5 w-1/2">
+              <label for="firstName" class="font-semibold text-sm text-surface-900">First
+                Name</label>
+              <input id="firstName" type="text" pInputText formControlName="firstName"
+                class="w-full p-2.5 rounded-lg border-surface-300" placeholder="Amine"
+                [ngClass]="{'ng-invalid ng-dirty': registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched}" />
+              @if (registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched) {
+              <small class="text-red-500 font-medium">Required.</small>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1.5 w-1/2">
+              <label for="lastName" class="font-semibold text-sm text-surface-900">Last Name</label>
+              <input id="lastName" type="text" pInputText formControlName="lastName"
+                class="w-full p-2.5 rounded-lg border-surface-300" placeholder="Benali"
+                [ngClass]="{'ng-invalid ng-dirty': registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched}" />
+              @if (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
+              <small class="text-red-500 font-medium">Required.</small>
+              }
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="email" class="font-semibold text-sm text-surface-900">Institutional
+              Email</label>
+            <input id="email" type="email" pInputText formControlName="email" placeholder="name@enicar.ucar.tn"
+              class="w-full p-2.5 rounded-lg border-surface-300"
+              [ngClass]="{'ng-invalid ng-dirty': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}" />
+            @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <small class="text-red-500 font-medium">Must use @enicar.ucar.tn</small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="role" class="font-semibold text-sm text-surface-900">Role</label>
+            <p-select id="role" [options]="roles" formControlName="role" optionLabel="name" placeholder="Student"
+              styleClass="w-full md:w-48 p-0 rounded-lg border-surface-300">
+            </p-select>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="department" class="font-semibold text-sm text-surface-900">Department</label>
+            <p-select id="department" [options]="departments" formControlName="department" optionLabel="name"
+              placeholder="Select department" styleClass="w-full md:w-64 p-0 rounded-lg border-surface-300">
+            </p-select>
+          </div>
+
+          <div class="flex flex-col gap-1.5 mt-2">
+            <label for="password" class="font-semibold text-sm text-surface-900">Password</label>
+            <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+              styleClass="w-full" inputStyleClass="w-full p-2.5 rounded-lg border-surface-300"
+              placeholder="Min 8 characters"></p-password>
+            @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <small class="text-red-500 font-medium">Password must be at least 8 characters.</small>
+            }
+          </div>
+
+          @if (errorMessage) {
+          <p-message severity="error" [text]="errorMessage" styleClass="w-full"></p-message>
+          }
+
+          <p-button type="submit" label="Create account" [loading]="isLoading"
+            styleClass="w-full mt-4 rounded-lg font-semibold" size="large"></p-button>
+
+          <div class="text-center mt-6 text-sm text-surface-600">
+            Already have an account?
+            <a routerLink="/login" class="font-semibold text-primary-600 hover:text-primary-500 transition-colors">Sign
+              in</a>
+          </div>
+
+        </form>
+        }
+      </p-card>
+    </div>
+  </div>
+</div>

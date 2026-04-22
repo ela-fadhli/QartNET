@@ -1,0 +1,100 @@
+<div class="flex min-h-screen bg-white">
+
+  <!-- Left Side: Branding -->
+  <div class="hidden lg:flex w-1/2 bg-primary-600 text-white p-12 flex-col justify-between"
+    style="background-color: var(--p-primary-500);">
+    <div>
+      <div class="flex items-center gap-3 text-xl font-bold mb-20 tracking-wider">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="6" cy="6" r="3"></circle>
+          <circle cx="18" cy="6" r="3"></circle>
+          <path d="M6 9v6"></path>
+          <path d="M9 18h3a3 3 0 0 0 3-3v-6"></path>
+        </svg>
+        QARTNET
+      </div>
+
+      <h1 class="text-5xl font-bold leading-tight mb-6 pr-12">Your academic tech community, all in one place.</h1>
+      <p class="text-lg text-primary-100 mb-16 pr-12" style="color: rgba(255,255,255,0.8);">
+        Collaborate on projects, host repositories, share knowledge, and connect with fellow students and professors.
+      </p>
+
+      <div class="flex gap-12">
+        <div>
+          <div class="text-3xl font-bold mb-1">1,200+</div>
+          <div class="text-sm font-medium" style="color: rgba(255,255,255,0.7);">Active Users</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold mb-1">3,400+</div>
+          <div class="text-sm font-medium" style="color: rgba(255,255,255,0.7);">Repositories</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold mb-1">850+</div>
+          <div class="text-sm font-medium" style="color: rgba(255,255,255,0.7);">Projects</div>
+        </div>
+      </div>
+    </div>
+    <div class="text-sm font-medium" style="color: rgba(255,255,255,0.5);">
+      QARTNET - Academic Collaborative Platform
+    </div>
+  </div>
+
+  <!-- Right Side: Login Form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+    <div class="w-full max-w-md">
+      <p-card styleClass="p-6 md:p-8 shadow-sm rounded-2xl border border-surface-200 bg-white">
+
+        <div class="text-center mb-8">
+          <h1 class="text-2xl font-bold text-surface-900 mb-2">Welcome back</h1>
+          <p class="text-surface-500 text-sm">Sign in with your institutional email</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+
+          <div class="flex flex-col gap-2">
+            <label for="email" class="font-medium text-sm text-surface-900">Institutional Email</label>
+            <input id="email" type="email" pInputText formControlName="email" placeholder="name@enicar.ucar.tn"
+              class="w-full p-3 rounded-lg border-surface-300"
+              [ngClass]="{'ng-invalid ng-dirty': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}" />
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <small class="text-red-500 font-medium">Please enter a valid institution email.</small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-2 relative">
+            <div class="flex items-center justify-between">
+              <label for="password" class="font-medium text-sm text-surface-900">Password</label>
+              <a routerLink="/forgot-password"
+                class="text-xs font-medium text-primary-600 hover:text-primary-500 transition-colors">Forgot
+                password?</a>
+            </div>
+
+            <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+              styleClass="w-full" inputStyleClass="w-full p-3 rounded-lg border-surface-300"
+              placeholder="Enter your password"></p-password>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <small class="text-red-500 font-medium">Password is required.</small>
+            }
+          </div>
+
+          @if (errorMessage) {
+          <p-message severity="error" [text]="errorMessage" styleClass="w-full"></p-message>
+          }
+
+          <p-button type="submit" label="Sign in" [loading]="isLoading"
+            styleClass="w-full mt-2 rounded-lg font-semibold" size="large">
+          </p-button>
+
+          <div class="text-center mt-6 text-sm text-surface-600">
+            Don't have an account?
+            <a routerLink="/register"
+              class="font-semibold text-primary-600 hover:text-primary-500 transition-colors">Create account</a>
+          </div>
+
+        </form>
+      </p-card>
+    </div>
+  </div>
+</div>

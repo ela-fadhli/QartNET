@@ -1,0 +1,293 @@
+<div class="min-h-screen bg-slate-50/50 p-6 lg:p-10">
+  <div class="max-w-7xl mx-auto flex flex-col gap-8">
+
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+      <div class="bg-primary-600 rounded-2xl w-14 h-14 flex items-center justify-center text-white shadow-sm shrink-0">
+        <i class="pi pi-shield text-2xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <h1 class="text-2xl font-bold text-surface-900 leading-tight">Admin Dashboard</h1>
+        <p class="text-surface-500 text-sm font-medium mt-0.5">Manage users, content, and platform activity</p>
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    @if (metrics) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Total Users</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.totalUsers }}</span>
+            </div>
+            <div class="bg-primary-50 text-primary-500 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-users text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">{{ metrics.totalUsersChange }}</div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Active Today</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.activeToday }}</span>
+            </div>
+            <div class="bg-blue-50 text-blue-500 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-chart-line text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">{{ metrics.activeTodayChange }}</div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Repositories</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.repositories }}</span>
+            </div>
+            <div class="bg-indigo-50 text-indigo-500 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-folder-open text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">{{ metrics.repositoriesChange }}</div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Forum Posts</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.forumPosts }}</span>
+            </div>
+            <div class="bg-sky-50 text-sky-500 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-comments text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">{{ metrics.forumPostsChange }}</div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Groups</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.groups }}</span>
+            </div>
+            <div class="bg-purple-50 text-purple-500 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-users text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">{{ metrics.groupsChange }}</div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-surface-200 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider">Storage Used</span>
+              <span class="text-4xl font-bold text-surface-900">{{ metrics.storageUsedValue }} GB</span>
+            </div>
+            <div class="bg-cyan-50 text-cyan-600 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+              <i class="pi pi-database text-lg"></i>
+            </div>
+          </div>
+          <div class="text-sm font-medium text-surface-600">of {{ metrics.storageUsedTotal }} GB</div>
+        </div>
+
+      </div>
+    }
+
+    <!-- Tabs & Content Container -->
+    <div class="flex flex-col gap-4">
+
+      <!-- Tabs -->
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 rounded-full font-semibold text-sm transition-colors"
+          [ngClass]="activeTab === 'users' ? 'bg-surface-100 text-surface-900 border border-surface-200' : 'text-surface-600 hover:bg-surface-100'"
+          (click)="activeTab = 'users'">
+          User Management
+        </button>
+
+        <button
+          class="px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-2"
+          [ngClass]="activeTab === 'reports' ? 'bg-surface-100 text-surface-900 border border-surface-200' : 'text-surface-600 hover:bg-surface-100'"
+          (click)="activeTab = 'reports'">
+          Content Reports
+          @if (pendingReportsCount > 0) {
+            <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+              {{ pendingReportsCount }}
+            </span>
+          }
+        </button>
+
+        <button
+          class="px-4 py-2 rounded-full font-medium text-sm transition-colors"
+          [ngClass]="activeTab === 'activity' ? 'bg-surface-100 text-surface-900 border border-surface-200' : 'text-surface-600 hover:bg-surface-100'"
+          (click)="activeTab = 'activity'">
+          Activity Log
+        </button>
+      </div>
+
+      <!-- ─── USER MANAGEMENT TAB ─── -->
+      @if (activeTab === 'users') {
+        <!-- Search -->
+        <p-iconfield styleClass="w-full">
+          <p-inputicon styleClass="pi pi-search"/>
+          <input
+            type="text"
+            pInputText
+            placeholder="Search users by name or email..."
+            class="w-full rounded-xl border-surface-200 p-3"
+            [(ngModel)]="searchQuery"
+            (input)="filterUsers()" />
+        </p-iconfield>
+
+        <!-- User Table -->
+        <div class="bg-white border border-surface-200 rounded-2xl overflow-hidden shadow-sm">
+          <p-table
+            [value]="filteredUsers"
+            styleClass="p-datatable-sm"
+            [tableStyle]="{'min-width': '50rem'}"
+            [rowHover]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="ps-6 py-4 text-xs font-bold text-surface-900 uppercase">User</th>
+                <th class="py-4 text-xs font-bold text-surface-900 uppercase">Role</th>
+                <th class="py-4 text-xs font-bold text-surface-900 uppercase">Department</th>
+                <th class="py-4 text-xs font-bold text-surface-900 uppercase">Joined</th>
+                <th class="py-4 text-xs font-bold text-surface-900 uppercase">Contributions</th>
+                <th class="pe-6 py-4 text-xs font-bold text-surface-900 uppercase text-center">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+              <tr>
+                <td class="ps-6 py-3">
+                  <div class="flex items-center gap-3">
+                    <p-avatar
+                      [label]="user.initials"
+                      shape="circle"
+                      styleClass="bg-primary-50 text-primary-700 font-bold text-sm h-10 w-10 shrink-0">
+                    </p-avatar>
+                    <div class="flex flex-col">
+                      <span class="font-semibold text-surface-900 text-sm">{{user.firstName}} {{user.lastName}}</span>
+                      <span class="text-xs text-surface-500 font-medium">{{user.email}}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <span
+                    class="text-xs font-bold px-3 py-1 rounded-full"
+                    [ngClass]="user.role === 'Teacher'
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'bg-surface-100 text-surface-700'">
+                    {{user.role}}
+                  </span>
+                </td>
+                <td class="py-3 text-surface-600 text-sm font-medium">{{user.department}}</td>
+                <td class="py-3 text-surface-600 text-sm font-medium">{{user.joined}}</td>
+                <td class="py-3 text-surface-600 text-sm font-medium">{{user.contributions}}</td>
+                <td class="pe-6 py-3 text-center">
+                  <p-button
+                    icon="pi pi-ellipsis-h"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="onActionClick(user); menu.toggle($event)">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center py-8 text-surface-500 font-medium">No users found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      }
+
+      <!-- ─── CONTENT REPORTS TAB ─── -->
+      @if (activeTab === 'reports') {
+        <div class="flex flex-col gap-3">
+          @for (report of contentReports; track report.id) {
+            <div class="bg-white border border-surface-200 rounded-2xl p-5 shadow-sm flex items-start gap-4">
+              <!-- Warning Icon -->
+              <div class="text-red-400 mt-0.5 shrink-0">
+                <i class="pi pi-exclamation-triangle text-lg"></i>
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class="text-xs font-semibold text-surface-600 bg-surface-100 px-2 py-0.5 rounded">
+                    {{ report.type }}
+                  </span>
+                  <span
+                    class="text-xs font-bold px-2 py-0.5 rounded"
+                    [ngClass]="getStatusClass(report.status)">
+                    {{ report.status }}
+                  </span>
+                </div>
+                <p class="text-sm font-semibold text-surface-900 mb-0.5">{{ report.title }}</p>
+                <p class="text-xs text-surface-500 font-medium">{{ report.reportedBy }}</p>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center gap-2 shrink-0">
+                <button
+                  class="text-sm font-semibold text-surface-600 hover:text-surface-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-surface-100"
+                  (click)="dismissReport(report)">
+                  Dismiss
+                </button>
+                <button
+                  class="text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors px-4 py-1.5 rounded-lg"
+                  (click)="takeAction(report)">
+                  Take Action
+                </button>
+              </div>
+            </div>
+          }
+          @empty {
+            <div class="bg-white border border-surface-200 rounded-2xl p-10 text-center shadow-sm">
+              <i class="pi pi-check-circle text-4xl text-green-500 mb-3 block"></i>
+              <p class="text-surface-500 font-medium">No pending content reports.</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ─── ACTIVITY LOG TAB ─── -->
+      @if (activeTab === 'activity') {
+        <div class="bg-white border border-surface-200 rounded-2xl shadow-sm divide-y divide-surface-100">
+          @for (event of activityLog; track event.id) {
+            <div class="flex items-center gap-4 px-6 py-4 hover:bg-surface-50 transition-colors">
+              <!-- Icon -->
+              <div
+                class="rounded-full w-9 h-9 flex items-center justify-center shrink-0"
+                [ngClass]="event.iconBg">
+                <i [class]="event.icon + ' text-sm'"></i>
+              </div>
+
+              <!-- Text -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-surface-900">{{ event.title }}</p>
+                <p class="text-xs text-surface-500 font-medium truncate">{{ event.description }}</p>
+              </div>
+
+              <!-- Time -->
+              <span class="text-xs text-surface-400 font-medium shrink-0">{{ event.time }}</span>
+            </div>
+          }
+          @empty {
+            <div class="px-6 py-10 text-center text-surface-500 font-medium">
+              No recent activity.
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
+
+<p-menu #menu [popup]="true" [model]="actionItems" styleClass="mt-2"></p-menu>
