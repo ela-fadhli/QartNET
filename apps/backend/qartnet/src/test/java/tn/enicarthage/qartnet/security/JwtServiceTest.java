@@ -65,4 +65,12 @@ class JwtServiceTest {
 
         assertThat(jwtService.isTokenValid(tampered)).isFalse();
     }
+
+    @Test
+    void isTokenValid_expiredToken_returnsFalse() {
+        ReflectionTestUtils.setField(jwtService, "expiration", -1000L);
+        String token = jwtService.generateToken(buildUser());
+
+        assertThat(jwtService.isTokenValid(token)).isFalse();
+    }
 }

@@ -4,10 +4,12 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoginRequest, RegisterRequest, AuthResponse, ApiResponse, ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 import { environment } from '../../../../environments/environment';
+import { WebSocketService } from '../../../core/services/websocket.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private wsService = inject(WebSocketService);
   private baseUrl = `${environment.apiUrl}/api/auth`;
 
   login(request: LoginRequest): Observable<AuthResponse> {
@@ -15,6 +17,7 @@ export class AuthService {
       map((res) => {
         const data = res.data!;
         this.saveToken(data.token);
+        this.wsService.connect(data.token);
         return data;
       }),
     );
@@ -47,6 +50,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.wsService.disconnect();
     localStorage.removeItem('qartnet_token');
   }
 }
