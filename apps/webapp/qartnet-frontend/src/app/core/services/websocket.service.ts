@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -12,7 +11,7 @@ export class WebSocketService {
     if (this.client?.active) return;
 
     this.client = new Client({
-      webSocketFactory: () => new SockJS(environment.wsUrl) as WebSocket,
+      brokerURL: environment.wsUrl,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
     });
