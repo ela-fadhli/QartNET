@@ -31,7 +31,7 @@ export class ProfileMyProfileComponent implements OnInit {
     firstName:         ['', Validators.maxLength(50)],
     lastName:          ['', Validators.maxLength(50)],
     dateOfBirth:       [''],
-    phoneNumber:       [''],
+    phoneNumber:       ['', Validators.pattern(/^\+?[0-9 \-]{7,20}$/)],
   });
 
   get username()    { return this.form.get('username')!; }

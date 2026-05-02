@@ -121,7 +121,10 @@
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="phoneNumber">Phone number</label>
-            <input pInputText id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="+216 XX XXX XXX" class="auth-input" />
+            <input pInputText id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="+216 XX XXX XXX" class="auth-input" [class.input-error]="phoneNumber.invalid && phoneNumber.touched" />
+            @if (phoneNumber.invalid && phoneNumber.touched) {
+              <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">Invalid phone number format</small>
+            }
           </div>
         </div>
 
