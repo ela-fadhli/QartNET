@@ -45,26 +45,24 @@ export class AuthSignUpComponent {
 
   form = this.fb.group(
     {
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      firstName:       ['', [Validators.required, Validators.maxLength(50)]],
+      lastName:        ['', [Validators.required, Validators.maxLength(50)]],
+      dateOfBirth:     [''],
+      phoneNumber:     [''],
+      email:           ['', [Validators.required, Validators.email]],
+      password:        ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
     },
     { validators: passwordMatchValidator },
   );
 
-  get username() {
-    return this.form.get('username')!;
-  }
-  get email() {
-    return this.form.get('email')!;
-  }
-  get password() {
-    return this.form.get('password')!;
-  }
-  get confirmPassword() {
-    return this.form.get('confirmPassword')!;
-  }
+  get firstName()       { return this.form.get('firstName')!; }
+  get lastName()        { return this.form.get('lastName')!; }
+  get dateOfBirth()     { return this.form.get('dateOfBirth')!; }
+  get phoneNumber()     { return this.form.get('phoneNumber')!; }
+  get email()           { return this.form.get('email')!; }
+  get password()        { return this.form.get('password')!; }
+  get confirmPassword() { return this.form.get('confirmPassword')!; }
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -75,14 +73,21 @@ export class AuthSignUpComponent {
     this.loading = true;
     this.errorMessage = null;
 
-    const { username, email, password } = this.form.value;
+    const { firstName, lastName, dateOfBirth, phoneNumber, email, password } = this.form.value;
 
     this.authService
-      .register({ username: username!, email: email!, password: password! })
+      .register({
+        firstName:   firstName!,
+        lastName:    lastName!,
+        dateOfBirth: dateOfBirth || undefined,
+        phoneNumber: phoneNumber || undefined,
+        email:       email!,
+        password:    password!,
+      })
       .subscribe({
         next: (res) => {
           this.authService.saveToken(res.token);
-          this.router.navigate(['/']);
+          this.router.navigate(['/profile/me']);
         },
         error: (err) => {
           this.errorMessage = err.userMessage ?? 'Registration failed. Please try again.';

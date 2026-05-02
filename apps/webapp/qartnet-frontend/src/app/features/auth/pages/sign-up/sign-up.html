@@ -53,22 +53,61 @@
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
 
-        <div class="flex flex-col gap-1.5">
-          <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="username">Username</label>
-          <input
-            pInputText
-            id="username"
-            type="text"
-            formControlName="username"
-            placeholder="your_username"
-            class="auth-input"
-            [class.input-error]="username.invalid && username.touched"
-          />
-          @if (username.invalid && username.touched) {
-            <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">
-              {{ username.hasError('required') ? 'Username is required' : 'At least 3 characters' }}
-            </small>
-          }
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="firstName">First name</label>
+            <input
+              pInputText
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="Ela"
+              class="auth-input"
+              [class.input-error]="firstName.invalid && firstName.touched"
+            />
+            @if (firstName.invalid && firstName.touched) {
+              <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">First name is required</small>
+            }
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="lastName">Last name</label>
+            <input
+              pInputText
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Fadhli"
+              class="auth-input"
+              [class.input-error]="lastName.invalid && lastName.touched"
+            />
+            @if (lastName.invalid && lastName.touched) {
+              <small class="font-['DM_Sans',sans-serif] text-[0.72rem] text-[#E07070]">Last name is required</small>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="dateOfBirth">Date of birth</label>
+            <input
+              pInputText
+              id="dateOfBirth"
+              type="date"
+              formControlName="dateOfBirth"
+              class="auth-input"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="phoneNumber">Phone number</label>
+            <input
+              pInputText
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              placeholder="+216 XX XXX XXX"
+              class="auth-input"
+            />
+          </div>
         </div>
 
         <div class="flex flex-col gap-1.5">

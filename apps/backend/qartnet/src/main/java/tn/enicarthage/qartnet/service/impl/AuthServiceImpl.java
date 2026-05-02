@@ -14,8 +14,10 @@ import tn.enicarthage.qartnet.dto.request.RegisterRequest;
 import tn.enicarthage.qartnet.dto.request.ResetPasswordRequest;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
 import tn.enicarthage.qartnet.model.PasswordResetToken;
+import tn.enicarthage.qartnet.model.Profile;
 import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.PasswordResetTokenRepository;
+import tn.enicarthage.qartnet.repository.ProfileRepository;
 import tn.enicarthage.qartnet.repository.UserRepository;
 import tn.enicarthage.qartnet.security.JwtService;
 import tn.enicarthage.qartnet.service.IAuthService;
@@ -31,6 +33,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements IAuthService {
 
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -41,22 +44,42 @@ public class AuthServiceImpl implements IAuthService {
     private String frontendUrl;
 
     @Override
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new ConflictException("Email is already in use");
         }
-        if (userRepository.existsByUsername(request.username())) {
-            throw new ConflictException("Username is already taken");
-        }
 
         User user = new User();
-        user.setPublicId(UUID.randomUUID());
-        user.setUsername(request.username());
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
-
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setDateOfBirth(request.dateOfBirth());
+        user.setPhoneNumber(request.phoneNumber());
         userRepository.save(user);
+
+        Profile profile = new Profile();
+        profile.setUsername(generateUniqueUsername(request.email()));
+        profile.setUser(user);
+        profileRepository.save(profile);
+
         return new AuthResponse(jwtService.generateToken(user));
+    }
+
+    private String generateUniqueUsername(String email) {
+        String base = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9_]", "");
+        if (base.isEmpty()) base = "user";
+        String candidate = base;
+        int attempt = 0;
+        while (profileRepository.existsByUsername(candidate)) {
+            if (++attempt > 10) {
+                candidate = base + UUID.randomUUID().toString().substring(0, 6);
+                break;
+            }
+            candidate = base + (int) (Math.random() * 9000 + 1000);
+        }
+        return candidate;
     }
 
     @Override
