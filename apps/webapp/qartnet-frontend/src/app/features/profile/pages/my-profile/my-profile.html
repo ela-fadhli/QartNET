@@ -12,10 +12,10 @@
     </div>
 
     @if (errorMessage) {
-      <p-message severity="error" [text]="errorMessage" styleClass="w-full mb-6" />
+      <p-message severity="error" [textContent]="errorMessage" styleClass="w-full mb-6" />
     }
     @if (successMessage) {
-      <p-message severity="success" [text]="successMessage" styleClass="w-full mb-6" />
+      <p-message severity="success" [textContent]="successMessage" styleClass="w-full mb-6" />
     }
 
     @if (loading) {
@@ -73,11 +73,11 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="firstName">First name</label>
-            <input pInputText id="firstName" type="text" formControlName="firstName" placeholder="Ela" class="auth-input" />
+            <input pInputText id="firstName" type="text" formControlName="firstName" placeholder="Name" class="auth-input" />
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="lastName">Last name</label>
-            <input pInputText id="lastName" type="text" formControlName="lastName" placeholder="Fadhli" class="auth-input" />
+            <input pInputText id="lastName" type="text" formControlName="lastName" placeholder="Last Name" class="auth-input" />
           </div>
         </div>
 
@@ -88,7 +88,7 @@
             id="username"
             type="text"
             formControlName="username"
-            placeholder="your_username"
+            placeholder="username"
             class="auth-input"
             [class.input-error]="username.invalid && username.touched"
           />

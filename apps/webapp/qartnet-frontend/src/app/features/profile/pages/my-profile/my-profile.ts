@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -16,6 +16,7 @@ import { ProfileResponse } from '../../models/profile.models';
 export class ProfileMyProfileComponent implements OnInit {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
+  private cdr = inject(ChangeDetectorRef);
 
   profile: ProfileResponse | null = null;
   editing = false;
@@ -44,12 +45,16 @@ export class ProfileMyProfileComponent implements OnInit {
     this.loading = true;
     this.profileService.getMyProfile().subscribe({
       next: (profile) => {
+        console.log('Profile received:', profile);
         this.profile = profile;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
+        console.error('Profile error:', err);
         this.errorMessage = err.userMessage ?? 'Failed to load profile.';
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -98,10 +103,12 @@ export class ProfileMyProfileComponent implements OnInit {
         this.editing = false;
         this.saving = false;
         this.successMessage = 'Profile updated successfully.';
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.errorMessage = err.userMessage ?? 'Failed to update profile.';
         this.saving = false;
+        this.cdr.markForCheck();
       },
     });
   }
