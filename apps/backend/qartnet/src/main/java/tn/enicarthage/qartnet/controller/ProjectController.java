@@ -1,7 +1,7 @@
 package tn.enicarthage.qartnet.controller;
 
-import com.qarnet.qartnetapi.model.ProjectEntity;
-import com.qarnet.qartnetapi.service.ProjectService;
+import tn.enicarthage.qartnet.model.ProjectEntity;
+import tn.enicarthage.qartnet.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,6 @@
 package tn.enicarthage.qartnet.repository;
 
-import com.qarnet.qartnetapi.model.RepositoryEntity;
+import tn.enicarthage.qartnet.model.RepositoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

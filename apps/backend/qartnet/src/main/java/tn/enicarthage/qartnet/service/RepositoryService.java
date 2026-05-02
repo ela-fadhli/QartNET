@@ -1,7 +1,7 @@
 package tn.enicarthage.qartnet.service;
 
-import com.qarnet.qartnetapi.model.RepositoryEntity;
-import com.qarnet.qartnetapi.repository.RepositoryJpaRepository;
+import tn.enicarthage.qartnet.model.RepositoryEntity;
+import tn.enicarthage.qartnet.repository.RepositoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
