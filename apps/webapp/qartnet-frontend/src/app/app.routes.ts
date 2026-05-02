@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 
 export const routes: Routes = [
   {
@@ -6,12 +8,19 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
-  },
-  {
     path: '',
-    redirectTo: 'auth/sign-in',
-    pathMatch: 'full',
+    component: MainLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'profile',
+        loadChildren: () => import('./features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
+      },
+      {
+        path: '',
+        redirectTo: 'profile/me',
+        pathMatch: 'full',
+      },
+    ],
   },
 ];
