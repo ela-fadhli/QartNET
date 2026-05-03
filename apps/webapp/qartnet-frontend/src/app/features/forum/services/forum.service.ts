@@ -5,11 +5,13 @@ import { map } from 'rxjs/operators';
 import { ApiResponse } from '../../../shared/models/api-response.model';
 import { environment } from '../../../../environments/environment';
 import {
-  CategoryResponse,
-  TagResponse,
+  ForumSummaryResponse,
+  ForumDetailResponse,
+  ForumCategoryResponse,
   ThreadSummaryResponse,
   ThreadDetailResponse,
   ReplyResponse,
+  CreateForumRequest,
   CreateThreadRequest,
   CreateReplyRequest,
   Page,
@@ -18,58 +20,82 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ForumService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/api/forum`;
+  private api = `${environment.apiUrl}/api`;
 
-  getCategories(): Observable<CategoryResponse[]> {
+  // ── Forums ────────────────────────────────────────────────────
+
+  getForums(query = '', page = 0, size = 12): Observable<Page<ForumSummaryResponse>> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page)
+      .set('size', size);
     return this.http
-      .get<ApiResponse<CategoryResponse[]>>(`${this.baseUrl}/categories`)
+      .get<ApiResponse<Page<ForumSummaryResponse>>>(`${this.api}/forums`, { params })
       .pipe(map((res) => res.data!));
   }
 
-  getTags(): Observable<TagResponse[]> {
+  getForum(slug: string): Observable<ForumDetailResponse> {
     return this.http
-      .get<ApiResponse<TagResponse[]>>(`${this.baseUrl}/tags`)
+      .get<ApiResponse<ForumDetailResponse>>(`${this.api}/forums/${slug}`)
       .pipe(map((res) => res.data!));
   }
 
-  getThreads(params: {
-    category?: string;
-    tag?: string;
-    page?: number;
-    size?: number;
-  }): Observable<Page<ThreadSummaryResponse>> {
-    let httpParams = new HttpParams();
-    if (params.category) httpParams = httpParams.set('category', params.category);
-    if (params.tag) httpParams = httpParams.set('tag', params.tag);
-    if (params.page !== undefined) httpParams = httpParams.set('page', params.page);
-    if (params.size !== undefined) httpParams = httpParams.set('size', params.size);
-
+  createForum(req: CreateForumRequest): Observable<ForumSummaryResponse> {
     return this.http
-      .get<ApiResponse<Page<ThreadSummaryResponse>>>(`${this.baseUrl}/threads`, { params: httpParams })
+      .post<ApiResponse<ForumSummaryResponse>>(`${this.api}/forums`, req)
+      .pipe(map((res) => res.data!));
+  }
+
+  // ── Categories ────────────────────────────────────────────────
+
+  getCategories(slug: string): Observable<ForumCategoryResponse[]> {
+    return this.http
+      .get<ApiResponse<ForumCategoryResponse[]>>(`${this.api}/forums/${slug}/categories`)
+      .pipe(map((res) => res.data!));
+  }
+
+  // ── Threads ───────────────────────────────────────────────────
+
+  getThreads(
+    slug: string,
+    categoryPublicId?: string,
+    page = 0,
+    size = 10,
+  ): Observable<Page<ThreadSummaryResponse>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (categoryPublicId) params = params.set('categoryPublicId', categoryPublicId);
+    return this.http
+      .get<ApiResponse<Page<ThreadSummaryResponse>>>(`${this.api}/forums/${slug}/threads`, { params })
       .pipe(map((res) => res.data!));
   }
 
   getThread(publicId: string): Observable<ThreadDetailResponse> {
     return this.http
-      .get<ApiResponse<ThreadDetailResponse>>(`${this.baseUrl}/threads/${publicId}`)
+      .get<ApiResponse<ThreadDetailResponse>>(`${this.api}/threads/${publicId}`)
       .pipe(map((res) => res.data!));
   }
 
-  createThread(request: CreateThreadRequest): Observable<ThreadSummaryResponse> {
+  createThread(slug: string, req: CreateThreadRequest): Observable<ThreadDetailResponse> {
     return this.http
-      .post<ApiResponse<ThreadSummaryResponse>>(`${this.baseUrl}/threads`, request)
+      .post<ApiResponse<ThreadDetailResponse>>(`${this.api}/forums/${slug}/threads`, req)
       .pipe(map((res) => res.data!));
   }
 
-  createReply(threadPublicId: string, request: CreateReplyRequest): Observable<ReplyResponse> {
+  deleteThread(publicId: string): Observable<void> {
     return this.http
-      .post<ApiResponse<ReplyResponse>>(`${this.baseUrl}/threads/${threadPublicId}/replies`, request)
+      .delete<void>(`${this.api}/threads/${publicId}`);
+  }
+
+  // ── Replies ───────────────────────────────────────────────────
+
+  createReply(threadPublicId: string, req: CreateReplyRequest): Observable<ReplyResponse> {
+    return this.http
+      .post<ApiResponse<ReplyResponse>>(`${this.api}/threads/${threadPublicId}/replies`, req)
       .pipe(map((res) => res.data!));
   }
 
   deleteReply(publicId: string): Observable<void> {
     return this.http
-      .delete<ApiResponse<void>>(`${this.baseUrl}/replies/${publicId}`)
-      .pipe(map(() => void 0));
+      .delete<void>(`${this.api}/replies/${publicId}`);
   }
 }

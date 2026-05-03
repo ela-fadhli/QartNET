@@ -1,7 +1,8 @@
 <!-- Loading -->
 @if (loading()) {
   <div class="flex flex-col gap-4 max-w-3xl">
-    <p-skeleton height="28px" width="60%" styleClass="!bg-[#0D1221]" />
+    <p-skeleton height="20px" width="50%" styleClass="!bg-[#0D1221]" />
+    <p-skeleton height="28px" width="70%" styleClass="!bg-[#0D1221]" />
     <p-skeleton height="160px" styleClass="!rounded-lg !bg-[#0D1221]" />
     <p-skeleton height="80px" styleClass="!rounded-lg !bg-[#0D1221]" />
     <p-skeleton height="80px" styleClass="!rounded-lg !bg-[#0D1221]" />
@@ -13,7 +14,7 @@
   <div class="max-w-3xl">
     <p-message severity="error" [textContent]="error()!" styleClass="w-full" />
     <a routerLink="/forum" class="inline-flex items-center gap-1.5 text-xs text-[#C9A84C]/70 hover:text-[#C9A84C] mt-4 transition-colors">
-      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forum
+      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forums
     </a>
   </div>
 }
@@ -23,9 +24,16 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs text-[#E8D5A3]/30">
-      <a routerLink="/forum" class="hover:text-[#C9A84C]/70 transition-colors">Forum</a>
+      <a routerLink="/forum" class="hover:text-[#C9A84C]/70 transition-colors">Forums</a>
       <i class="pi pi-chevron-right text-[0.55rem]"></i>
-      <a [routerLink]="['/forum/threads']" [queryParams]="{ category: thread()!.category.publicId }" class="hover:text-[#C9A84C]/70 transition-colors">
+      <a [routerLink]="['/forum', thread()!.forumSlug]" class="hover:text-[#C9A84C]/70 transition-colors">
+        {{ thread()!.forumName }}
+      </a>
+      <i class="pi pi-chevron-right text-[0.55rem]"></i>
+      <a
+        [routerLink]="['/forum', thread()!.forumSlug]"
+        [queryParams]="{ category: thread()!.category.publicId }"
+        class="hover:text-[#C9A84C]/70 transition-colors">
         {{ thread()!.category.name }}
       </a>
     </nav>
@@ -66,7 +74,6 @@
         </h2>
 
         @for (reply of topLevelReplies(thread()!.replies); track reply.publicId) {
-          <!-- Top-level reply -->
           <div class="bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium text-[#E8D5A3]/60">{{ reply.authorUsername }}</span>
@@ -78,7 +85,6 @@
             </div>
             <p class="text-sm text-[#E8D5A3]/75 leading-relaxed whitespace-pre-wrap">{{ reply.body }}</p>
 
-            <!-- Nested replies -->
             @for (child of childrenOf(reply.publicId, thread()!.replies); track child.publicId) {
               <div class="ml-4 pl-4 border-l border-[#C9A84C]/10 flex flex-col gap-2 pt-2">
                 <span class="text-xs font-medium text-[#E8D5A3]/50">

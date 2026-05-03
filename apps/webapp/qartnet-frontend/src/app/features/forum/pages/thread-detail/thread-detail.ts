@@ -31,9 +31,7 @@ export class ThreadDetailComponent implements OnInit {
     body: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(2000)]],
   });
 
-  get body() {
-    return this.replyForm.get('body')!;
-  }
+  get body() { return this.replyForm.get('body')!; }
 
   topLevelReplies(replies: ReplyResponse[]): ReplyResponse[] {
     return replies.filter((r) => !r.parentReplyPublicId);

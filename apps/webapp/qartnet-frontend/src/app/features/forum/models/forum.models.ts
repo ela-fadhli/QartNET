@@ -1,7 +1,37 @@
-export interface CategoryResponse {
+export interface ForumSummaryResponse {
   publicId: string;
   name: string;
+  slug: string;
   description: string | null;
+  banner: string | null;
+  ownerUsername: string;
+  threadCount: number;
+  createdAt: string;
+}
+
+export interface ForumCategoryResponse {
+  publicId: string;
+  name: string;
+}
+
+export interface ForumMemberResponse {
+  userPublicId: string;
+  username: string;
+  role: 'ADMIN' | 'MODERATOR';
+}
+
+export interface ForumDetailResponse {
+  publicId: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  banner: string | null;
+  ownerUsername: string;
+  categories: ForumCategoryResponse[];
+  threadCount: number;
+  createdAt: string;
+  admin: boolean;
+  moderator: boolean;
 }
 
 export interface TagResponse {
@@ -13,7 +43,9 @@ export interface ThreadSummaryResponse {
   publicId: string;
   title: string;
   authorUsername: string;
-  category: CategoryResponse;
+  forumSlug: string;
+  forumName: string;
+  category: ForumCategoryResponse;
   tags: TagResponse[];
   viewCount: number;
   replyCount: number;
@@ -33,18 +65,27 @@ export interface ThreadDetailResponse {
   title: string;
   body: string;
   authorUsername: string;
-  category: CategoryResponse;
+  forumSlug: string;
+  forumName: string;
+  category: ForumCategoryResponse;
   tags: TagResponse[];
   viewCount: number;
   replies: ReplyResponse[];
   createdAt: string;
 }
 
+export interface CreateForumRequest {
+  name: string;
+  slug: string;
+  description: string | null;
+  banner: string | null;
+}
+
 export interface CreateThreadRequest {
   title: string;
   body: string;
   categoryPublicId: string;
-  tagPublicIds: string[];
+  tagNames: string[];
 }
 
 export interface CreateReplyRequest {
