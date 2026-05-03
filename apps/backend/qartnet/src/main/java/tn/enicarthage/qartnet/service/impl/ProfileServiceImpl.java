@@ -23,6 +23,7 @@ public class ProfileServiceImpl implements IProfileService {
     private final ProfileRepository profileRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public ProfileResponse getMyProfile(UUID publicId) {
         User user = findUser(publicId);
         Profile profile = findProfile(user);
@@ -55,6 +56,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProfileResponse getPublicProfile(String username) {
         Profile profile = profileRepository.findByUsername(username)
                 .orElseThrow(() -> ResourceNotFoundException.of("Profile", username));

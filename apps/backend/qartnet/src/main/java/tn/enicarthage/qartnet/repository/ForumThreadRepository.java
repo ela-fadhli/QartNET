@@ -9,10 +9,6 @@ import tn.enicarthage.qartnet.model.ForumThread;
 import java.util.Optional;
 import java.util.UUID;
 
-
-import java.util.Optional;
-import java.util.UUID;
-
 public interface ForumThreadRepository extends JpaRepository<ForumThread, Long> {
     Optional<ForumThread> findByPublicId(UUID publicId);
 

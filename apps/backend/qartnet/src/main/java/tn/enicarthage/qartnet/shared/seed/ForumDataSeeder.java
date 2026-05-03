@@ -3,11 +3,15 @@ package tn.enicarthage.qartnet.shared.seed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import tn.enicarthage.qartnet.model.*;
+import tn.enicarthage.qartnet.model.Category;
+import tn.enicarthage.qartnet.model.ForumThread;
+import tn.enicarthage.qartnet.model.Profile;
+import tn.enicarthage.qartnet.model.Reply;
+import tn.enicarthage.qartnet.model.Tag;
+import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
@@ -15,7 +19,7 @@ import tn.enicarthage.qartnet.shared.enums.Role;
 import java.util.List;
 
 @Component
-@Profile("local")
+@org.springframework.context.annotation.Profile("local")
 @RequiredArgsConstructor
 public class ForumDataSeeder implements ApplicationRunner {
 

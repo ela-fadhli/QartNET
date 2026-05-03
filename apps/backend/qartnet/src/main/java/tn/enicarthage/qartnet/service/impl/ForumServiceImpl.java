@@ -29,6 +29,7 @@ public class ForumServiceImpl implements IForumService {
     private final ProfileRepository profileRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getCategories() {
         return categoryRepository.findAll().stream()
                 .map(c -> new CategoryResponse(c.getPublicId(), c.getName(), c.getDescription()))
@@ -36,6 +37,7 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TagResponse> getTags() {
         return tagRepository.findAll().stream()
                 .map(t -> new TagResponse(t.getPublicId(), t.getName()))
@@ -43,6 +45,7 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ThreadSummaryResponse> getThreads(UUID categoryPublicId, UUID tagPublicId, Pageable pageable) {
         return threadRepository.findFiltered(categoryPublicId, tagPublicId, pageable)
                 .map(this::toSummary);

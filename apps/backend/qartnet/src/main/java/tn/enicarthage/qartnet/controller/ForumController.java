@@ -1,6 +1,8 @@
 package tn.enicarthage.qartnet.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.enicarthage.qartnet.dto.request.CreateReplyRequest;
 import tn.enicarthage.qartnet.dto.request.CreateThreadRequest;
@@ -18,6 +21,7 @@ import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/forum")
 @RequiredArgsConstructor
@@ -39,8 +43,8 @@ public class ForumController {
     public ResponseEntity<ApiResponse<Page<ThreadSummaryResponse>>> getThreads(
             @RequestParam(required = false) UUID category,
             @RequestParam(required = false) UUID tag,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         var pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return ResponseEntity.ok(ApiResponse.success(forumService.getThreads(category, tag, pageable)));
     }
