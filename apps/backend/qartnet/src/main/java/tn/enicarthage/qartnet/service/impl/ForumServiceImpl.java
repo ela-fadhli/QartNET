@@ -41,7 +41,7 @@ public class ForumServiceImpl implements ForumService {
         if (forumRepo.existsBySlug(req.slug()))
             throw new ConflictException("Slug already taken: " + req.slug());
 
-        User owner = requireUserByUsername(username);
+        User owner = requireUser(username);
 
         Forum forum = new Forum();
         forum.setName(req.name());
@@ -74,7 +74,7 @@ public class ForumServiceImpl implements ForumService {
     @Transactional(readOnly = true)
     public ForumDetailResponse getForum(String slug, String username) {
         Forum forum = requireForum(slug);
-        User user = requireUserByUsername(username);
+        User user = requireUser(username);
         boolean isAdmin = isAdminOrOwner(forum, user);
         boolean isMod = !isAdmin && memberRepo.findByForumAndUser(forum, user)
                 .map(m -> m.getRole() == ForumRole.MODERATOR).orElse(false);
@@ -218,7 +218,7 @@ public class ForumServiceImpl implements ForumService {
     @Transactional
     public ThreadDetailResponse createThread(String slug, CreateThreadRequest req, String username) {
         Forum forum = requireForum(slug);
-        User author = requireUserByUsername(username);
+        User author = requireUser(username);
         ForumCategory category = categoryRepo.findByPublicIdAndForum(req.categoryPublicId(), forum)
                 .orElseThrow(() -> ResourceNotFoundException.of("Category", req.categoryPublicId()));
         List<Tag> tags = resolveOrCreateTags(req.tagNames());
@@ -238,7 +238,7 @@ public class ForumServiceImpl implements ForumService {
     @Transactional
     public void deleteThread(UUID publicId, String username) {
         ForumThread thread = requireThread(publicId);
-        User user = requireUserByUsername(username);
+        User user = requireUser(username);
         boolean isAuthor = thread.getAuthor().getId().equals(user.getId());
         boolean isStaff = isOwner(thread.getForum(), user) || memberRepo.existsByForumAndUser(thread.getForum(), user);
         if (!isAuthor && !isStaff) throw new ForbiddenException("Cannot delete this thread");
@@ -251,7 +251,7 @@ public class ForumServiceImpl implements ForumService {
     @Transactional
     public ReplyResponse createReply(UUID threadPublicId, CreateReplyRequest req, String username) {
         ForumThread thread = requireThread(threadPublicId);
-        User author = requireUserByUsername(username);
+        User author = requireUser(username);
         Reply parent = null;
         if (req.parentReplyPublicId() != null)
             parent = replyRepo.findByPublicId(req.parentReplyPublicId())
@@ -270,7 +270,7 @@ public class ForumServiceImpl implements ForumService {
     public void deleteReply(UUID replyPublicId, String username) {
         Reply reply = replyRepo.findByPublicId(replyPublicId)
                 .orElseThrow(() -> ResourceNotFoundException.of("Reply", replyPublicId));
-        User user = requireUserByUsername(username);
+        User user = requireUser(username);
         boolean isAuthor = reply.getAuthor().getId().equals(user.getId());
         boolean isStaff = isOwner(reply.getThread().getForum(), user)
                 || memberRepo.existsByForumAndUser(reply.getThread().getForum(), user);
@@ -290,10 +290,9 @@ public class ForumServiceImpl implements ForumService {
                 .orElseThrow(() -> ResourceNotFoundException.of("Thread", publicId));
     }
 
-    private User requireUserByUsername(String username) {
-        return profileRepo.findByUsername(username)
-                .map(Profile::getUser)
-                .orElseThrow(() -> ResourceNotFoundException.of("User", username));
+    private User requireUser(String publicIdStr) {
+        return userRepo.findByPublicId(UUID.fromString(publicIdStr))
+                .orElseThrow(() -> ResourceNotFoundException.of("User", publicIdStr));
     }
 
     private boolean isOwner(Forum forum, User user) {
@@ -301,7 +300,7 @@ public class ForumServiceImpl implements ForumService {
     }
 
     private void requireOwner(Forum forum, String username) {
-        User user = requireUserByUsername(username);
+        User user = requireUser(username);
         if (!isOwner(forum, user))
             throw new ForbiddenException("Only the forum owner can perform this action");
     }
@@ -312,7 +311,7 @@ public class ForumServiceImpl implements ForumService {
     }
 
     private void requireAdminOrOwner(Forum forum, String username) {
-        User user = requireUserByUsername(username);
+        User user = requireUser(username);
         if (!isAdminOrOwner(forum, user))
             throw new ForbiddenException("Only forum admins can perform this action");
     }
