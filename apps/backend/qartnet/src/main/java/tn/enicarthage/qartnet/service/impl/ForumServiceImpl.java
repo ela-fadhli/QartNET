@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ForumServiceImpl implements IForumService {
 
-    private final CategoryRepository categoryRepository;
+    private final ForumCategoryRepository forumCategoryRepository;
     private final TagRepository tagRepository;
     private final ForumThreadRepository threadRepository;
     private final ReplyRepository replyRepository;
@@ -31,7 +31,7 @@ public class ForumServiceImpl implements IForumService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryResponse> getCategories() {
-        return categoryRepository.findAll().stream()
+        return forumCategoryRepository.findAll().stream()
                 .map(c -> new CategoryResponse(c.getPublicId(), c.getName(), c.getDescription()))
                 .toList();
     }

@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByPublicId(UUID publicId);
     List<Tag> findByPublicIdIn(List<UUID> publicIds);
+    Optional<Tag> findByNameIgnoreCase(String name);
 }

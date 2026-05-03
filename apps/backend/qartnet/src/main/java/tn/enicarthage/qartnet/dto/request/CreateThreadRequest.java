@@ -7,16 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public record CreateThreadRequest(
-        @NotBlank(message = "Title is required")
-        @Size(min = 5, max = 200, message = "Title must be between 5 and 200 characters")
-        String title,
-
-        @NotBlank(message = "Body is required")
-        @Size(min = 10, message = "Body must be at least 10 characters")
-        String body,
-
-        @NotNull(message = "Category is required")
-        UUID categoryPublicId,
-
-        List<UUID> tagPublicIds
+        @NotBlank @Size(min = 5, max = 200) String title,
+        @NotBlank @Size(min = 10) String body,
+        @NotNull UUID categoryPublicId,
+        List<@NotBlank @Size(max = 50) String> tagNames
 ) {}
