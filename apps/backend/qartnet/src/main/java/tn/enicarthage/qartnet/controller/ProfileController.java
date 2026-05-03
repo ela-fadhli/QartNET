@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.enicarthage.qartnet.dto.request.UpdateProfileRequest;
 import tn.enicarthage.qartnet.dto.response.ProfileResponse;
-import tn.enicarthage.qartnet.service.IProfileService;
+import tn.enicarthage.qartnet.service.ProfileService;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 
 import java.util.UUID;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    private final IProfileService profileService;
+    private final ProfileService profileService;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(Authentication auth) {

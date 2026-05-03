@@ -12,7 +12,7 @@ import tn.enicarthage.qartnet.dto.request.LoginRequest;
 import tn.enicarthage.qartnet.dto.request.RegisterRequest;
 import tn.enicarthage.qartnet.dto.request.ResetPasswordRequest;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
-import tn.enicarthage.qartnet.service.IAuthService;
+import tn.enicarthage.qartnet.service.AuthService;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 
 @RestController
@@ -20,7 +20,7 @@ import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final IAuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {

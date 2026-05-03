@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import tn.enicarthage.qartnet.dto.request.CreateReplyRequest;
 import tn.enicarthage.qartnet.dto.request.CreateThreadRequest;
 import tn.enicarthage.qartnet.dto.response.*;
-import tn.enicarthage.qartnet.service.IForumService;
+import tn.enicarthage.qartnet.service.ForumService;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ForumController {
 
-    private final IForumService forumService;
+    private final ForumService forumService;
 
     @GetMapping("/categories")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategories() {

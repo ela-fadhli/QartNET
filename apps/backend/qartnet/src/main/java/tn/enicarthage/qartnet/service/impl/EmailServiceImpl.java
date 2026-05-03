@@ -5,12 +5,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import tn.enicarthage.qartnet.service.IEmailService;
+import tn.enicarthage.qartnet.service.EmailService;
 
 @Service
 @ConditionalOnBean(JavaMailSender.class)
 @RequiredArgsConstructor
-public class EmailServiceImpl implements IEmailService {
+public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 

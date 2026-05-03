@@ -1,6 +1,6 @@
 package tn.enicarthage.qartnet.service;
 
-public interface IEmailService {
+public interface EmailService {
 
     void sendPasswordResetEmail(String toEmail, String resetLink);
 }

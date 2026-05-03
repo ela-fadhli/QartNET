@@ -44,7 +44,7 @@ class AuthServiceImplTest {
     @Mock private AuthenticationManager authenticationManager;
     @Mock private JwtService jwtService;
     @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
-    @Mock private tn.enicarthage.qartnet.service.IEmailService emailService;
+    @Mock private EmailService emailService;
 
     @InjectMocks private AuthServiceImpl authService;
 

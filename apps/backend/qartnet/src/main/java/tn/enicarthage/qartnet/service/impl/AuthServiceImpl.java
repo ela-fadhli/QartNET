@@ -20,17 +20,16 @@ import tn.enicarthage.qartnet.repository.PasswordResetTokenRepository;
 import tn.enicarthage.qartnet.repository.ProfileRepository;
 import tn.enicarthage.qartnet.repository.UserRepository;
 import tn.enicarthage.qartnet.security.JwtService;
-import tn.enicarthage.qartnet.service.IAuthService;
-import tn.enicarthage.qartnet.service.IEmailService;
+import tn.enicarthage.qartnet.service.AuthService;
+import tn.enicarthage.qartnet.service.EmailService;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
-import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements IAuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
@@ -38,7 +37,7 @@ public class AuthServiceImpl implements IAuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final IEmailService emailService;
+    private final EmailService emailService;
 
     @Value("${app.frontend.url:http://localhost:4200}")
     private String frontendUrl;

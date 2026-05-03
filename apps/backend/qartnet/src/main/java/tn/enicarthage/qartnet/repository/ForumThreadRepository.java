@@ -13,5 +13,6 @@ public interface ForumThreadRepository extends JpaRepository<ForumThread, Long> 
     Optional<ForumThread> findByPublicId(UUID publicId);
     Page<ForumThread> findByForum(Forum forum, Pageable pageable);
     Page<ForumThread> findByForumAndCategory(Forum forum, ForumCategory category, Pageable pageable);
+    long countByForum(Forum forum);
 }
 

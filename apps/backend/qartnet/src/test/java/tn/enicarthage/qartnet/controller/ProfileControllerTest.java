@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import tn.enicarthage.qartnet.dto.request.UpdateProfileRequest;
 import tn.enicarthage.qartnet.dto.response.ProfileResponse;
 import tn.enicarthage.qartnet.security.JwtService;
-import tn.enicarthage.qartnet.service.IProfileService;
+import tn.enicarthage.qartnet.service.ProfileService;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
 import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
 
@@ -36,7 +36,7 @@ class ProfileControllerTest {
 
     private ObjectMapper objectMapper;
 
-    @MockitoBean private IProfileService profileService;
+    @MockitoBean private ProfileService profileService;
     @MockitoBean private JwtService jwtService;
     @MockitoBean private UserDetailsService userDetailsService;
 
