@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: qartnet
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/qartnet}
+    username: ${DB_USERNAME:qartnet_user}
+    password: ${DB_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_batch_fetch_size: 20
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/qartnet}
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:bXlTZWNyZXRLZXlGb3JRYXJ0TkVUUGxhdGZvcm0yMDI1TXVzdEJlQXRMZWFzdDMyQ2hhcnM=}
+    expiration: ${JWT_EXPIRATION_MS:900000}
+  refresh-token:
+    expiration-ms: ${REFRESH_TOKEN_EXPIRATION_MS:604800000}
+  email:
+    verification-expiration-hours: 24
+    frontend-url: ${FRONTEND_URL:http://localhost:4200}
+    domain-whitelist: ${EMAIL_DOMAIN:enicarthage.rnu.tn}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+  rate-limit:
+    auth-requests-per-minute: 5
+
+logging:
+  level:
+    tn.enicarthage.qartnet: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN

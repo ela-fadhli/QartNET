@@ -1,6 +1,7 @@
 package tn.enicarthage.qartnet.shared.enums;
 
 public enum Role {
-    USER,
+    STUDENT,
+    TEACHER,
     ADMIN
 }

@@ -17,4 +17,9 @@ public class LogEmailServiceImpl implements IEmailService {
     public void sendPasswordResetEmail(String toEmail, String resetLink) {
         log.warn("Mail not configured — password reset link for {}: {}", toEmail, resetLink);
     }
+
+    @Override
+    public void sendEmailVerification(String toEmail, String verificationLink) {
+        log.warn("Mail not configured — email verification link for {}: {}", toEmail, verificationLink);
+    }
 }

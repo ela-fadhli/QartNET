@@ -11,6 +11,8 @@ import tn.enicarthage.qartnet.model.User;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -26,9 +28,13 @@ public class JwtService {
     }
 
     public String generateToken(User user) {
+        List<String> roles = user.getRoles().stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .subject(user.getPublicId().toString())
-                .claim("role", user.getRole().name())
+                .claim("roles", roles)
                 .claim("email", user.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))

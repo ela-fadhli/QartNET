@@ -53,6 +53,17 @@
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
 
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="firstName">First name</label>
+            <input pInputText id="firstName" type="text" formControlName="firstName" placeholder="Alice" class="auth-input" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="lastName">Last name</label>
+            <input pInputText id="lastName" type="text" formControlName="lastName" placeholder="Smith" class="auth-input" />
+          </div>
+        </div>
+
         <div class="flex flex-col gap-1.5">
           <label class="font-['DM_Sans',sans-serif] text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="username">Username</label>
           <input

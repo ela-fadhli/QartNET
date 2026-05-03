@@ -29,4 +29,19 @@ public class EmailServiceImpl implements IEmailService {
         );
         mailSender.send(message);
     }
+
+    @Override
+    public void sendEmailVerification(String toEmail, String verificationLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("QartNET — Verify your email address");
+        message.setText(
+                "Welcome to QartNET!\n\n" +
+                "Please verify your email address by clicking the link below (valid for 24 hours):\n" +
+                verificationLink + "\n\n" +
+                "If you did not create an account, you can safely ignore this email.\n\n" +
+                "— The QartNET Team"
+        );
+        mailSender.send(message);
+    }
 }

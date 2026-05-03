@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\USER\\\\Desktop\\\\projetplateform\\\\QartNET\" -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\USER\\\\Desktop\\\\projetplateform\\\\QartNET\\\\apps\\\\webapp\\\\qartnet-frontend\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\USER\\\\Desktop\\\\projetplateform\\\\QartNET\\\\apps\\\\webapp\\\\qartnet-frontend\\\\src\\\\app\" -Recurse -Force)",
+      "Bash(node -e \"const p = require\\('./node_modules/primeng/package.json'\\); console.log\\(p.version\\);\")"
+    ]
+  }
+}

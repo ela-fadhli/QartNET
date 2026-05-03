@@ -1,0 +1,107 @@
+<div class="px-8 py-8">
+
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="font-['Cinzel',serif] text-2xl font-semibold text-[#E8D5A3] m-0 mb-1">Users</h1>
+      <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/40 m-0">{{ totalElements() }} total</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex gap-3 mb-5">
+    <input pInputText [(ngModel)]="searchQuery" (keyup.enter)="search()"
+           placeholder="Search username or email…"
+           class="auth-input" style="max-width:320px" />
+    <p-select [(ngModel)]="selectedStatus" [options]="statusOptions"
+              optionLabel="label" optionValue="value"
+              (onChange)="search()"
+              styleClass="auth-input" style="min-width:180px" />
+    <p-button icon="pi pi-search" label="Search" severity="secondary" size="small" (onClick)="search()" />
+  </div>
+
+  <!-- Table -->
+  <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] overflow-hidden">
+
+    @if (loading()) {
+      <div class="flex justify-center py-16">
+        <div class="w-8 h-8 rounded-full border-2 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin"></div>
+      </div>
+    }
+
+    @if (!loading()) {
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-[#C9A84C]/10">
+            <th class="admin-th">User</th>
+            <th class="admin-th">Email</th>
+            <th class="admin-th">Roles</th>
+            <th class="admin-th">Status</th>
+            <th class="admin-th">Joined</th>
+            <th class="admin-th text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.publicId) {
+            <tr class="border-b border-[#C9A84C]/05 hover:bg-[#C9A84C]/03 transition-colors">
+              <td class="admin-td">
+                <div>
+                  <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3] m-0 font-medium">{{ user.username }}</p>
+                  @if (user.firstName || user.lastName) {
+                    <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 m-0">{{ user.firstName }} {{ user.lastName }}</p>
+                  }
+                </div>
+              </td>
+              <td class="admin-td">
+                <span class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/65">{{ user.email }}</span>
+                @if (user.emailVerified) {
+                  <i class="pi pi-verified text-[#4ade80] text-xs ml-1"></i>
+                }
+              </td>
+              <td class="admin-td">
+                <div class="flex flex-wrap gap-1">
+                  @for (role of user.roles; track role) {
+                    <p-tag [value]="role" [severity]="getRoleSeverity(role)" styleClass="text-xs" />
+                  }
+                </div>
+              </td>
+              <td class="admin-td">
+                <p-tag [value]="user.accountStatus" [severity]="getStatusSeverity(user.accountStatus)" styleClass="text-xs" />
+              </td>
+              <td class="admin-td">
+                <span class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/50">{{ user.createdAt | date:'dd MMM yyyy' }}</span>
+              </td>
+              <td class="admin-td text-right">
+                <div class="flex justify-end gap-2">
+                  <p-button
+                    [icon]="user.accountStatus === 'ACTIVE' ? 'pi pi-ban' : 'pi pi-check'"
+                    [severity]="user.accountStatus === 'ACTIVE' ? 'warn' : 'success'"
+                    size="small" [text]="true"
+                    [pTooltip]="user.accountStatus === 'ACTIVE' ? 'Suspend' : 'Activate'"
+                    (onClick)="toggleStatus(user)" />
+                  <p-button icon="pi pi-trash" severity="danger" size="small" [text]="true"
+                            pTooltip="Delete" (onClick)="deleteUser(user)" />
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+        <div class="px-5 py-3 flex items-center justify-between border-t border-[#C9A84C]/10">
+          <span class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40">
+            Page {{ page() + 1 }} of {{ totalPages }}
+          </span>
+          <div class="flex gap-2">
+            <p-button icon="pi pi-chevron-left" size="small" severity="secondary" [text]="true"
+                      [disabled]="page() === 0" (onClick)="prevPage()" />
+            <p-button icon="pi pi-chevron-right" size="small" severity="secondary" [text]="true"
+                      [disabled]="page() + 1 >= totalPages" (onClick)="nextPage()" />
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+</div>

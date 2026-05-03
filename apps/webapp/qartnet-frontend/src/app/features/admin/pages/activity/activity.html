@@ -1,0 +1,61 @@
+<div class="px-8 py-8">
+
+  <div class="mb-6">
+    <h1 class="font-['Cinzel',serif] text-2xl font-semibold text-[#E8D5A3] m-0 mb-1">Activity</h1>
+    <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/40 m-0">Platform event log</p>
+  </div>
+
+  <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] overflow-hidden">
+
+    @if (loading()) {
+      <div class="flex justify-center py-16">
+        <div class="w-8 h-8 rounded-full border-2 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin"></div>
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="divide-y divide-[#C9A84C]/05">
+        @for (log of logs(); track log.id) {
+          <div class="px-5 py-3.5 flex items-start gap-4 hover:bg-[#C9A84C]/02 transition-colors">
+            <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" [style.background]="getActionColor(log.action)"></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3 mb-0.5">
+                <span class="font-['DM_Sans',sans-serif] text-xs font-medium text-[#E8D5A3]/80 uppercase tracking-wide">{{ log.action }}</span>
+                @if (log.username) {
+                  <span class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40">&#64;{{ log.username }}</span>
+                }
+              </div>
+              @if (log.details) {
+                <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/45 m-0">{{ log.details }}</p>
+              }
+            </div>
+            <div class="text-right flex-shrink-0">
+              <span class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/30">{{ log.createdAt | date:'dd MMM, HH:mm' }}</span>
+              @if (log.ipAddress) {
+                <p class="font-['DM_Sans',sans-serif] text-[0.65rem] text-[#E8D5A3]/20 m-0">{{ log.ipAddress }}</p>
+              }
+            </div>
+          </div>
+        }
+        @empty {
+          <div class="px-5 py-12 text-center font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/30">
+            No activity recorded
+          </div>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <div class="px-5 py-3 flex items-center justify-between border-t border-[#C9A84C]/10">
+          <span class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40">Page {{ page() + 1 }} of {{ totalPages }}</span>
+          <div class="flex gap-2">
+            <p-button icon="pi pi-chevron-left" size="small" severity="secondary" [text]="true"
+                      [disabled]="page() === 0" (onClick)="prevPage()" />
+            <p-button icon="pi pi-chevron-right" size="small" severity="secondary" [text]="true"
+                      [disabled]="page() + 1 >= totalPages" (onClick)="nextPage()" />
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+</div>

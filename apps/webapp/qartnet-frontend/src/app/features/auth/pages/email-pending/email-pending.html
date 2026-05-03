@@ -1,0 +1,39 @@
+<div class="min-h-screen bg-[#0A0E1A] flex items-center justify-center p-8">
+  <div class="w-full max-w-[420px] text-center">
+    <div class="flex flex-col items-center gap-5">
+
+      <div class="w-16 h-16 rounded-full bg-[#C9A84C]/10 flex items-center justify-center">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+          <polyline points="22,6 12,13 2,6" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+      <div class="mb-5">
+        <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+          <polygon points="20,2 38,12 38,28 20,38 2,28 2,12" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+          <text x="20" y="25" text-anchor="middle" fill="#C9A84C" font-size="11" font-weight="600"
+                font-family="'Cinzel', serif" letter-spacing="1">Q</text>
+        </svg>
+      </div>
+
+      <h1 class="font-['Cinzel',serif] text-2xl font-semibold text-[#E8D5A3] m-0">Check your inbox</h1>
+      <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/50 m-0 max-w-[320px]">
+        We've sent a verification link to your email address.
+        Click the link in the email to activate your account.
+      </p>
+
+      <div class="w-full p-4 rounded-lg border border-[#C9A84C]/15 bg-[#C9A84C]/5 text-left">
+        <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/50 m-0 leading-relaxed">
+          Didn't receive the email? Check your spam folder.
+          The link expires in <strong class="text-[#C9A84C]">24 hours</strong>.
+        </p>
+      </div>
+
+      <a routerLink="/auth/sign-in" class="font-['DM_Sans',sans-serif] text-sm text-[#C9A84C] no-underline hover:underline mt-2">
+        ← Back to sign in
+      </a>
+    </div>
+  </div>
+</div>

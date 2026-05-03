@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn install *)",
+      "Bash(mvn test *)",
+      "Bash(mvn clean *)",
+      "Bash(mvn spring-boot:run -Dspring-boot.run.jvmArguments=\"-Dspring.jpa.hibernate.ddl-auto=update\")",
+      "Bash(jobs -l)",
+      "Bash(curl -s http://localhost:8080/actuator/health)",
+      "Bash(taskkill /F /IM java.exe)",
+      "Bash(taskkill /IM java.exe /F)",
+      "PowerShell(Stop-Process *)"
+    ]
+  }
+}

@@ -11,14 +11,7 @@ import { LoginRequest } from '../../models/auth.models';
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    InputTextModule,
-    PasswordModule,
-    ButtonModule,
-    MessageModule,
-  ],
+  imports: [ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, MessageModule],
   templateUrl: './sign-in.html',
 })
 export class AuthSignInComponent {
@@ -34,18 +27,11 @@ export class AuthSignInComponent {
     password: ['', Validators.required],
   });
 
-  get email() {
-    return this.form.get('email')!;
-  }
-  get password() {
-    return this.form.get('password')!;
-  }
+  get email() { return this.form.get('email')!; }
+  get password() { return this.form.get('password')!; }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.loading = true;
     this.errorMessage = null;
@@ -54,8 +40,9 @@ export class AuthSignInComponent {
     const payload: LoginRequest = { email: email!, password: password! };
 
     this.authService.login(payload).subscribe({
-      next: (res) => {
-        this.router.navigate(['/']);
+      next: () => {
+        const destination = this.authService.hasRole('ADMIN') ? '/admin/dashboard' : '/profile';
+        this.router.navigate([destination]);
       },
       error: (err) => {
         this.errorMessage = err.userMessage ?? 'Invalid credentials. Please try again.';

@@ -1,0 +1,66 @@
+<div class="px-8 py-8">
+
+  <div class="mb-8">
+    <h1 class="font-['Cinzel',serif] text-2xl font-semibold text-[#E8D5A3] m-0 mb-1">Dashboard</h1>
+    <p class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/40 m-0">Platform overview</p>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center py-20">
+      <div class="w-10 h-10 rounded-full border-2 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin"></div>
+    </div>
+  }
+
+  @if (!loading() && stats(); as s) {
+
+    <!-- Primary stats -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      @for (card of [
+        { label: 'Total users',   value: s.totalUsers,   icon: 'pi-users',       color: '#C9A84C' },
+        { label: 'Active',        value: s.activeUsers,  icon: 'pi-check-circle', color: '#4ade80' },
+        { label: 'Pending',       value: s.pendingUsers, icon: 'pi-clock',        color: '#facc15' },
+        { label: 'Suspended',     value: s.suspendedUsers, icon: 'pi-ban',        color: '#f87171' }
+      ]; track card.label) {
+        <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
+          <div class="flex items-start justify-between mb-3">
+            <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0">{{ card.label }}</p>
+            <i class="pi {{ card.icon }} text-base" [style.color]="card.color"></i>
+          </div>
+          <p class="font-['Cinzel',serif] text-3xl font-semibold text-[#E8D5A3] m-0">{{ card.value | number }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- Secondary stats row -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
+        <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">New this week</p>
+        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.newRegistrationsLast7Days }}</p>
+      </div>
+      <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
+        <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">New this month</p>
+        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.newRegistrationsLast30Days }}</p>
+      </div>
+      <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
+        <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">Pending reports</p>
+        <p class="font-['Cinzel',serif] text-2xl font-semibold m-0"
+           [class.text-[#f87171]]="s.pendingReports > 0"
+           [class.text-[#E8D5A3]]="s.pendingReports === 0">{{ s.pendingReports }}</p>
+      </div>
+    </div>
+
+    <!-- Users by role -->
+    <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
+      <h3 class="font-['DM_Sans',sans-serif] text-xs uppercase tracking-widest text-[#C9A84C]/60 mb-4 m-0">Users by role</h3>
+      <div class="flex gap-8">
+        @for (entry of s.usersByRole | keyvalue; track entry.key) {
+          <div class="text-center">
+            <p class="font-['Cinzel',serif] text-xl font-semibold text-[#E8D5A3] m-0 mb-1">{{ entry.value | number }}</p>
+            <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 m-0 uppercase">{{ entry.key }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+  }
+</div>

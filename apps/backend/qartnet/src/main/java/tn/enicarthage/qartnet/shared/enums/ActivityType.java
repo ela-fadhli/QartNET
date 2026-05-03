@@ -1,0 +1,15 @@
+package tn.enicarthage.qartnet.shared.enums;
+
+public enum ActivityType {
+    USER_REGISTER,
+    USER_LOGIN,
+    USER_LOGOUT,
+    EMAIL_VERIFIED,
+    PASSWORD_RESET_REQUEST,
+    PASSWORD_RESET_COMPLETE,
+    PROFILE_UPDATED,
+    ADMIN_USER_STATUS_CHANGE,
+    ADMIN_USER_ROLE_CHANGE,
+    ADMIN_REPORT_RESOLVED,
+    ADMIN_CONTENT_DELETED
+}
