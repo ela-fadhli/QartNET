@@ -42,7 +42,7 @@ class ForumServiceImplTest {
 
     private User author;
     private Profile profile;
-    private Category category;
+    private ForumCategory forumCategory;
     private ForumThread thread;
     private Reply reply;
 
@@ -55,17 +55,17 @@ class ForumServiceImplTest {
         profile.setUsername("yassine_dev");
         profile.setUser(author);
 
-        category = new Category();
-        category.setPublicId(UUID.randomUUID());
-        category.setName("Tech");
-        category.setDescription("Software engineering discussions");
+        forumCategory = new ForumCategory();
+        forumCategory.setPublicId(UUID.randomUUID());
+        forumCategory.setName("Tech");
+        forumCategory.setDescription("Software engineering discussions");
 
         thread = new ForumThread();
         thread.setPublicId(UUID.randomUUID());
         thread.setTitle("Spring Boot 3 best practices");
         thread.setBody("What are the best practices for structuring a Spring Boot 3 project?");
         thread.setAuthor(author);
-        thread.setCategory(category);
+        thread.setForumCategory(forumCategory);
 
         reply = new Reply();
         reply.setPublicId(UUID.randomUUID());
@@ -78,13 +78,13 @@ class ForumServiceImplTest {
 
     @Test
     void getCategories_returnsAllMapped() {
-        when(categoryRepository.findAll()).thenReturn(List.of(category));
+        when(categoryRepository.findAll()).thenReturn(List.of(forumCategory));
 
         var result = forumService.getCategories();
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).name()).isEqualTo("Tech");
-        assertThat(result.get(0).publicId()).isEqualTo(category.getPublicId());
+        assertThat(result.get(0).publicId()).isEqualTo(forumCategory.getPublicId());
     }
 
     // --- getTags ---
@@ -153,7 +153,7 @@ class ForumServiceImplTest {
     @Test
     void createThread_validRequest_savesAndReturnsSummary() {
         when(userRepository.findByPublicId(author.getPublicId())).thenReturn(Optional.of(author));
-        when(categoryRepository.findByPublicId(category.getPublicId())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByPublicId(forumCategory.getPublicId())).thenReturn(Optional.of(forumCategory));
         when(tagRepository.findByPublicIdIn(List.of())).thenReturn(List.of());
         when(threadRepository.save(any())).thenReturn(thread);
         when(profileRepository.findByUser(author)).thenReturn(Optional.of(profile));
@@ -162,7 +162,7 @@ class ForumServiceImplTest {
         var request = new CreateThreadRequest(
                 "Spring Boot 3 best practices",
                 "What are the best practices for structuring a Spring Boot 3 project?",
-                category.getPublicId(),
+                forumCategory.getPublicId(),
                 List.of()
         );
 
@@ -198,7 +198,7 @@ class ForumServiceImplTest {
         var request = new CreateThreadRequest(
                 "Some title here",
                 "Some body content here",
-                category.getPublicId(),
+                forumCategory.getPublicId(),
                 List.of()
         );
 

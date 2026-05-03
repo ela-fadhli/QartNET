@@ -16,13 +16,13 @@ public interface ForumThreadRepository extends JpaRepository<ForumThread, Long> 
             value = """                                                                                                                                                                         
               SELECT DISTINCT t FROM ForumThread t
               LEFT JOIN t.tags tag
-              WHERE (:categoryPublicId IS NULL OR t.category.publicId = :categoryPublicId)
+              WHERE (:categoryPublicId IS NULL OR t.forumCategory.publicId = :categoryPublicId)
               AND   (:tagPublicId      IS NULL OR tag.publicId        = :tagPublicId)
               """,
             countQuery = """                                                                                                                                                                    
               SELECT COUNT(DISTINCT t) FROM ForumThread t
               LEFT JOIN t.tags tag
-              WHERE (:categoryPublicId IS NULL OR t.category.publicId = :categoryPublicId)
+              WHERE (:categoryPublicId IS NULL OR t.forumCategory.publicId = :categoryPublicId)
               AND   (:tagPublicId      IS NULL OR tag.publicId        = :tagPublicId)
               """
     )

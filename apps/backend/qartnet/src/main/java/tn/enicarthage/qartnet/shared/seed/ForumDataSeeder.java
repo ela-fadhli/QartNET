@@ -6,12 +6,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import tn.enicarthage.qartnet.model.Category;
-import tn.enicarthage.qartnet.model.ForumThread;
-import tn.enicarthage.qartnet.model.Profile;
-import tn.enicarthage.qartnet.model.Reply;
-import tn.enicarthage.qartnet.model.Tag;
-import tn.enicarthage.qartnet.model.User;
+import tn.enicarthage.qartnet.model.*;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
@@ -140,14 +135,14 @@ public class ForumDataSeeder implements ApplicationRunner {
 
     // --- Helpers ---
 
-    private Category category(String name, String description) {
-        Category c = new Category();
+    private ForumCategory category(String name, String description) {
+        ForumCategory c = new ForumCategory();
         c.setName(name);
         c.setDescription(description);
         return c;
     }
 
-    private Category save(Category c) {
+    private ForumCategory save(ForumCategory c) {
         return categoryRepository.save(c);
     }
 
@@ -180,12 +175,12 @@ public class ForumDataSeeder implements ApplicationRunner {
         return user;
     }
 
-    private ForumThread seedThread(User author, Category category, String title, String body, List<Tag> tags) {
+    private ForumThread seedThread(User author, ForumCategory forumCategory, String title, String body, List<Tag> tags) {
         ForumThread t = new ForumThread();
         t.setTitle(title);
         t.setBody(body);
         t.setAuthor(author);
-        t.setCategory(category);
+        t.setForumCategory(forumCategory);
         t.getTags().addAll(tags);
         return threadRepository.save(t);
     }

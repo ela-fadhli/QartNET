@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "forum_categories")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Category extends BaseEntity {
+public class ForumCategory extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "forum_id", nullable = false)
+    private Forum forum;
 }

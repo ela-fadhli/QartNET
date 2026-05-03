@@ -69,7 +69,7 @@ public class ForumServiceImpl implements IForumService {
                 thread.getTitle(),
                 thread.getBody(),
                 usernameOf(thread.getAuthor()),
-                new CategoryResponse(thread.getCategory().getPublicId(), thread.getCategory().getName(), thread.getCategory().getDescription()),
+                new CategoryResponse(thread.getForumCategory().getPublicId(), thread.getForumCategory().getName(), thread.getForumCategory().getDescription()),
                 thread.getTags().stream().map(t -> new TagResponse(t.getPublicId(), t.getName())).toList(),
                 thread.getViewCount(),
                 replies,
@@ -81,7 +81,7 @@ public class ForumServiceImpl implements IForumService {
     @Transactional
     public ThreadSummaryResponse createThread(UUID authorPublicId, CreateThreadRequest request) {
         User author = findUser(authorPublicId);
-        Category category = categoryRepository.findByPublicId(request.categoryPublicId())
+        ForumCategory forumCategory = categoryRepository.findByPublicId(request.categoryPublicId())
                 .orElseThrow(() -> ResourceNotFoundException.of("Category", request.categoryPublicId()));
 
         List<UUID> tagIds = request.tagPublicIds() != null ? request.tagPublicIds() : List.of();
@@ -91,7 +91,7 @@ public class ForumServiceImpl implements IForumService {
         thread.setTitle(request.title());
         thread.setBody(request.body());
         thread.setAuthor(author);
-        thread.setCategory(category);
+        thread.setForumCategory(forumCategory);
         thread.getTags().addAll(tags);
 
         threadRepository.save(thread);
@@ -156,7 +156,7 @@ public class ForumServiceImpl implements IForumService {
                 t.getPublicId(),
                 t.getTitle(),
                 usernameOf(t.getAuthor()),
-                new CategoryResponse(t.getCategory().getPublicId(), t.getCategory().getName(), t.getCategory().getDescription()),
+                new CategoryResponse(t.getForumCategory().getPublicId(), t.getForumCategory().getName(), t.getForumCategory().getDescription()),
                 t.getTags().stream().map(tag -> new TagResponse(tag.getPublicId(), tag.getName())).toList(),
                 t.getViewCount(),
                 replyRepository.countByThreadPublicId(t.getPublicId()),

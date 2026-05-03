@@ -20,9 +20,13 @@ public class ForumThread extends BaseEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "forum_id", nullable = false)
+    private Forum forum;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private ForumCategory category;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
