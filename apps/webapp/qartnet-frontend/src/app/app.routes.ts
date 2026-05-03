@@ -13,6 +13,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'forum',
+        loadChildren: () => import('./features/forum/forum.routes').then((m) => m.FORUM_ROUTES),
+      },
+      {
         path: 'profile',
         loadChildren: () => import('./features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
       },
