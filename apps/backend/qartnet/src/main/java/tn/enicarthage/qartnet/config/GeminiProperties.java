@@ -12,7 +12,7 @@ public record GeminiProperties(
         int requestTimeoutSeconds
 ) {
     public GeminiProperties {
-        if (model == null || model.isBlank()) model = "gemini-1.5-flash";
+        if (model == null || model.isBlank()) model = "gemini-2.5-flash";
         if (baseUrl == null || baseUrl.isBlank()) baseUrl = "https://generativelanguage.googleapis.com/v1beta";
         if (historyLimit <= 0) historyLimit = 20;
         if (requestTimeoutSeconds <= 0) requestTimeoutSeconds = 15;

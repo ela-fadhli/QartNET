@@ -56,7 +56,9 @@ public class GeminiClient {
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
                         String err = new String(res.getBody().readAllBytes());
                         log.warn("Gemini error {}: {}", res.getStatusCode(), err);
-                        throw new LlmUnavailableException("Gemini call failed: " + res.getStatusCode());
+                        String snippet = err.length() > 200 ? err.substring(0, 200) + "..." : err;
+                        throw new LlmUnavailableException(
+                                "upstream " + res.getStatusCode() + " — " + snippet);
                     })
                     .body(Map.class);
 
