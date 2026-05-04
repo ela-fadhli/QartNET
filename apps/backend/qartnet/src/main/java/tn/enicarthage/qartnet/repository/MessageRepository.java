@@ -1,0 +1,36 @@
+package tn.enicarthage.qartnet.repository;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import tn.enicarthage.qartnet.model.Conversation;
+import tn.enicarthage.qartnet.model.Message;
+import tn.enicarthage.qartnet.model.User;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface MessageRepository extends JpaRepository<Message, Long> {
+
+    Optional<Message> findByPublicId(UUID publicId);
+
+    List<Message> findByConversationOrderByCreatedAtDesc(Conversation conversation, Pageable pageable);
+
+    List<Message> findByConversationAndCreatedAtBeforeOrderByCreatedAtDesc(
+            Conversation conversation, LocalDateTime before, Pageable pageable);
+
+    Optional<Message> findFirstByConversationOrderByCreatedAtDesc(Conversation conversation);
+
+    @Query("""
+           SELECT COUNT(m) FROM Message m
+           WHERE m.conversation = :conversation
+             AND m.sender <> :viewer
+             AND (:after IS NULL OR m.createdAt > :after)
+           """)
+    long countUnreadFor(@Param("conversation") Conversation conversation,
+                        @Param("viewer") User viewer,
+                        @Param("after") LocalDateTime after);
+}
