@@ -1,0 +1,114 @@
+<div class="flex flex-col gap-8">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-['Cinzel',serif] text-2xl font-bold text-[#E8D5A3] m-0 mb-1">Project Command Center</h1>
+      <p class="text-[#E8D5A3]/50 text-sm m-0">Orchestrate your engineering marvels and collaborative efforts.</p>
+    </div>
+    <p-button 
+      label="Initialize New Project" 
+      icon="pi pi-plus" 
+      styleClass="auth-btn !w-auto px-6"
+      (onClick)="openCreateDialog()" />
+  </div>
+
+  <!-- Project Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (project of projects(); track project.id) {
+      <p-card styleClass="h-full">
+        <ng-template pTemplate="header">
+          <div class="p-4 flex items-center justify-between border-b border-[#C9A84C]/5">
+            <span class="text-[#C9A84C]/60 text-[10px] uppercase tracking-widest font-bold">Project Segment</span>
+            <p-tag [value]="project.progress === 100 ? 'Completed' : 'Active'" 
+                   [severity]="project.progress === 100 ? 'success' : 'info'"
+                   styleClass="!bg-[#C9A84C]/10 !text-[#C9A84C] !border-none !text-[10px]" />
+          </div>
+        </ng-template>
+
+        <div class="flex flex-col h-full">
+          <h2 class="text-lg font-semibold text-[#E8D5A3] mb-2 hover:text-[#C9A84C] transition-colors cursor-pointer"
+              [routerLink]="['/projects', project.id]">
+            {{ project.title }}
+          </h2>
+          <p class="text-[#E8D5A3]/60 text-sm mb-6 line-clamp-2 leading-relaxed">
+            {{ project.description }}
+          </p>
+
+          <div class="mt-auto">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] text-[#E8D5A3]/40 uppercase tracking-tight">Technical Progress</span>
+              <span class="text-[11px] text-[#C9A84C] font-bold">{{ project.progress }}%</span>
+            </div>
+            <p-progressBar [value]="project.progress" [showValue]="false" />
+            
+            <div class="flex items-center justify-between mt-6 pt-4 border-t border-[#C9A84C]/5">
+              <div class="flex items-center gap-4">
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-[#E8D5A3]/30 uppercase">Deadline</span>
+                  <span class="text-xs text-[#E8D5A3]/70 font-medium">{{ project.deadline }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-[#E8D5A3]/30 uppercase">Team</span>
+                  <span class="text-xs text-[#E8D5A3]/70 font-medium">{{ project.teamCount }} Members</span>
+                </div>
+              </div>
+              <p-button icon="pi pi-arrow-right" 
+                        [routerLink]="['/projects', project.id]"
+                        styleClass="p-button-rounded p-button-text !text-[#C9A84C]" />
+            </div>
+          </div>
+        </div>
+      </p-card>
+    } @empty {
+      <div class="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-[#C9A84C]/10 rounded-2xl bg-[#0D1221]/30">
+        <i class="pi pi-folder-open text-4xl text-[#C9A84C]/20 mb-4"></i>
+        <p class="text-[#E8D5A3]/40 text-sm">No active projects found. Start by initializing one.</p>
+      </div>
+    }
+  </div>
+
+  <!-- Create Dialog -->
+  <p-dialog 
+    [visible]="showCreateDialog()" 
+    (onHide)="showCreateDialog.set(false)"
+    [modal]="true" 
+    [header]="'Initialize Project'" 
+    [style]="{width: '450px'}"
+    styleClass="project-dialog">
+    
+    <div class="flex flex-col gap-4 py-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Project Title</label>
+        <input pInputText [(ngModel)]="newProject.title" class="auth-input" placeholder="e.g. Quantum Ledger" />
+      </div>
+      
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Description</label>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="newProject.description" 
+          class="auth-input h-24 resize-none" 
+          placeholder="High-level architecture summary..."></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Deadline</label>
+          <input pInputText [(ngModel)]="newProject.deadline" class="auth-input" placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Team Size</label>
+          <input pInputText type="number" [(ngModel)]="newProject.teamCount" class="auth-input" />
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3 justify-end pt-6 mt-2 border-t border-[#C9A84C]/10">
+        <p-button label="Cancel" (onClick)="showCreateDialog.set(false)" styleClass="p-button-text !text-[#E8D5A3]/50" />
+        <p-button label="Confirm & Initialize" (onClick)="createProject()" styleClass="auth-btn !w-auto px-6" />
+      </div>
+    </div>
+  </p-dialog>
+
+</div>

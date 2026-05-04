@@ -1,0 +1,132 @@
+<div class="flex flex-col gap-8">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-['Cinzel',serif] text-2xl font-bold text-[#E8D5A3] m-0 mb-1">Knowledge Repositories</h1>
+      <p class="text-[#E8D5A3]/50 text-sm m-0">Secure and immutable storage for your codebase and architectural assets.</p>
+    </div>
+    <p-button 
+      label="New Repository" 
+      icon="pi pi-git" 
+      styleClass="auth-btn !w-auto px-6"
+      (onClick)="openCreateDialog()" />
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="flex items-center gap-4 bg-[#0D1221] p-4 rounded-xl border border-[#C9A84C]/5">
+    <div class="flex-1 relative">
+      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[#E8D5A3]/25 text-sm"></i>
+      <input pInputText placeholder="Find a repository..." 
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+             class="w-full bg-transparent border-none text-[#E8D5A3]/70 placeholder-[#E8D5A3]/20 focus:ring-0 text-sm pl-10" />
+    </div>
+    <div class="h-4 w-px bg-[#C9A84C]/10"></div>
+    <div class="flex gap-2">
+      <p-button label="All" 
+                (onClick)="selectedFilter.set('ALL')"
+                [styleClass]="selectedFilter() === 'ALL' ? 'p-button-text !text-[#C9A84C] !text-xs !py-1 !px-3 !bg-[#C9A84C]/10' : 'p-button-text !text-[#E8D5A3]/40 !text-xs !py-1 !px-3 hover:!bg-[#C9A84C]/5'" />
+      <p-button label="Public" 
+                (onClick)="selectedFilter.set('PUBLIC')"
+                [styleClass]="selectedFilter() === 'PUBLIC' ? 'p-button-text !text-[#C9A84C] !text-xs !py-1 !px-3 !bg-[#C9A84C]/10' : 'p-button-text !text-[#E8D5A3]/40 !text-xs !py-1 !px-3 hover:!bg-[#C9A84C]/5'" />
+      <p-button label="Private" 
+                (onClick)="selectedFilter.set('PRIVATE')"
+                [styleClass]="selectedFilter() === 'PRIVATE' ? 'p-button-text !text-[#C9A84C] !text-xs !py-1 !px-3 !bg-[#C9A84C]/10' : 'p-button-text !text-[#E8D5A3]/40 !text-xs !py-1 !px-3 hover:!bg-[#C9A84C]/5'" />
+    </div>
+  </div>
+
+  <!-- Repo List -->
+  <div class="flex flex-col gap-4">
+    @for (repo of filteredRepositories(); track repo.id) {
+      <div class="repo-item flex items-start justify-between cursor-pointer"
+           [routerLink]="['/repositories', repo.owner, repo.name]">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-semibold text-[#E8D5A3] m-0 hover:underline">
+              {{ repo.owner }} / <span class="text-[#C9A84C]">{{ repo.name }}</span>
+            </h3>
+            <p-tag [value]="repo.visibility" 
+                   styleClass="!bg-transparent !border !border-[#C9A84C]/20 !text-[#C9A84C]/60 !text-[9px] !uppercase" />
+          </div>
+          <p class="text-[#E8D5A3]/50 text-sm m-0 line-clamp-1 max-w-2xl">
+            {{ repo.description || 'No description provided for this repository.' }}
+          </p>
+          <div class="flex items-center gap-5 mt-2">
+            @if (repo.language) {
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full" [style.background-color]="getLanguageColor(repo.language)"></span>
+                <span class="text-xs text-[#E8D5A3]/40">{{ repo.language }}</span>
+              </div>
+            }
+            <div class="flex items-center gap-1.5 text-[#E8D5A3]/40">
+              <i class="pi pi-star text-xs"></i>
+              <span class="text-xs">{{ repo.stars || 0 }}</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[#E8D5A3]/40">
+              <i class="pi pi-share-alt text-xs"></i>
+              <span class="text-xs">{{ repo.forks || 0 }}</span>
+            </div>
+            <span class="text-[11px] text-[#E8D5A3]/25 uppercase tracking-tighter">Updated {{ repo.updatedAt }}</span>
+          </div>
+        </div>
+        
+        <div class="flex flex-col items-end gap-2">
+          <div class="flex -space-x-2">
+            <p-avatar image="https://api.dicebear.com/7.x/avataaars/svg?seed=1" shape="circle" styleClass="border-2 border-[#0D1221] !w-6 !h-6" />
+            <p-avatar image="https://api.dicebear.com/7.x/avataaars/svg?seed=2" shape="circle" styleClass="border-2 border-[#0D1221] !w-6 !h-6" />
+            <p-avatar label="+3" shape="circle" styleClass="!bg-[#C9A84C]/20 !text-[#C9A84C] !text-[8px] border-2 border-[#0D1221] !w-6 !h-6" />
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[#C9A84C]/10 rounded-2xl bg-[#0D1221]/30">
+        <i class="pi pi-code text-4xl text-[#C9A84C]/20 mb-4"></i>
+        <p class="text-[#E8D5A3]/40 text-sm">No repositories found in your workspace.</p>
+      </div>
+    }
+  </div>
+
+  <!-- Create Dialog -->
+  <p-dialog 
+    [visible]="showCreateDialog()" 
+    (onHide)="showCreateDialog.set(false)"
+    [modal]="true" 
+    [header]="'Spawn New Repository'" 
+    [style]="{width: '450px'}"
+    styleClass="project-dialog">
+    
+    <div class="flex flex-col gap-4 py-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Owner / Username</label>
+        <input pInputText [(ngModel)]="newRepo.owner" class="auth-input" placeholder="e.g. ela-fadhli" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Repository Name</label>
+        <input pInputText [(ngModel)]="newRepo.name" class="auth-input" placeholder="e.g. neural-core-v2" />
+      </div>
+      
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Description (Optional)</label>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="newRepo.description" 
+          class="auth-input h-20 resize-none" 
+          placeholder="Briefly describe the purpose..."></textarea>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-wider">Visibility</label>
+        <p-selectButton [options]="visibilityOptions" [(ngModel)]="newRepo.visibility" 
+                       styleClass="custom-select-button" />
+      </div>
+
+      <!-- Action Buttons (Moved inside content for visibility) -->
+      <div class="flex gap-3 justify-end pt-6 mt-2 border-t border-[#C9A84C]/10">
+        <p-button label="Discard" (onClick)="showCreateDialog.set(false)" styleClass="p-button-text !text-[#E8D5A3]/50" />
+        <p-button label="Initialize Repository" (onClick)="createRepository()" styleClass="auth-btn !w-auto px-6" />
+      </div>
+    </div>
+  </p-dialog>
+
+</div>

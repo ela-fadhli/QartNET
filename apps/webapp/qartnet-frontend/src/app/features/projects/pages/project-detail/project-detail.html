@@ -1,0 +1,108 @@
+@if (project(); as p) {
+<div class="flex flex-col gap-8">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <p-button icon="pi pi-arrow-left" [routerLink]="['/projects']" 
+                  styleClass="p-button-rounded p-button-text !text-[#C9A84C] !p-0" />
+        <h1 class="font-['Cinzel',serif] text-2xl font-bold text-[#E8D5A3] m-0">{{ p.title }}</h1>
+      </div>
+      <p class="text-[#E8D5A3]/50 text-sm m-0 ml-10">Repository: <span class="text-[#C9A84C]">{{ p.repositoryName }}</span></p>
+    </div>
+    <div class="flex gap-3">
+      <p-button label="View Repository" icon="pi pi-code" (onClick)="viewRepository()" [disabled]="!p.repositoryName" styleClass="p-button-text !text-[#C9A84C] !bg-[#C9A84C]/5" />
+      <p-button label="Edit Project" icon="pi pi-pencil" styleClass="auth-btn !w-auto px-6" />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left Column: Details & Team -->
+    <div class="lg:col-span-2 flex flex-col gap-8">
+      
+      <!-- Overview Card -->
+      <div class="detail-card">
+        <h3 class="text-[#E8D5A3] font-semibold mb-4 flex items-center gap-2">
+          <i class="pi pi-info-circle text-[#C9A84C]"></i> Overview
+        </h3>
+        <p class="text-[#E8D5A3]/70 leading-relaxed mb-8">
+          {{ p.description }}
+        </p>
+        
+        <div class="flex flex-col gap-2 mb-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-[#E8D5A3]/40 uppercase tracking-widest">Execution Progress</span>
+            <span class="text-xs text-[#C9A84C] font-bold">{{ p.progress }}%</span>
+          </div>
+          <p-progressBar [value]="p.progress" [showValue]="false" styleClass="!h-2" />
+        </div>
+      </div>
+
+      <!-- Team Section -->
+      <div class="detail-card">
+        <h3 class="text-[#E8D5A3] font-semibold mb-6 flex items-center gap-2">
+          <i class="pi pi-users text-[#C9A84C]"></i> Engineering Team
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @for (member of p.team; track member.userId) {
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-[#0A0E1A]/40 border border-[#C9A84C]/5">
+              <p-avatar [image]="member.avatarUrl" shape="circle" size="large" />
+              <div class="flex flex-col">
+                <span class="text-sm font-medium text-[#E8D5A3]">{{ member.name }}</span>
+                <span class="text-[11px] text-[#E8D5A3]/40">{{ member.role }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Timeline & Stats -->
+    <div class="flex flex-col gap-8">
+      
+      <!-- Stats Card -->
+      <div class="detail-card bg-gradient-to-br from-[#0D1221] to-[#0A0E1A]">
+        <h3 class="text-[#E8D5A3] font-semibold mb-6 text-sm uppercase tracking-tighter border-b border-[#C9A84C]/10 pb-3">
+          Chronology
+        </h3>
+        <p-timeline [value]="p.timeline || []" styleClass="custom-timeline">
+          <ng-template pTemplate="marker" let-event>
+            <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-lg" 
+                  [style.backgroundColor]="event.color">
+              <i [class]="event.icon + ' text-xs'"></i>
+            </span>
+          </ng-template>
+          <ng-template pTemplate="content" let-event>
+            <div class="flex flex-col mb-6">
+              <span class="text-[#E8D5A3] font-medium text-sm">{{ event.event }}</span>
+              <span class="text-[11px] text-[#E8D5A3]/40">{{ event.date }}</span>
+            </div>
+          </ng-template>
+        </p-timeline>
+      </div>
+
+      <!-- Quick Info -->
+      <div class="detail-card">
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-[10px] text-[#E8D5A3]/30 uppercase font-bold tracking-widest">Final Deadline</span>
+            <span class="text-[#E8D5A3]">{{ p.deadline }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[10px] text-[#E8D5A3]/30 uppercase font-bold tracking-widest">Project Status</span>
+            <p-tag [value]="p.progress === 100 ? 'Finalized' : 'Operational'" 
+                   [severity]="p.progress === 100 ? 'success' : 'info'"
+                   styleClass="!bg-[#C9A84C]/10 !text-[#C9A84C] !border-none !text-[10px] !w-fit" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+}
