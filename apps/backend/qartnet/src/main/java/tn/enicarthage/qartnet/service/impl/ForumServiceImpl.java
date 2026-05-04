@@ -75,7 +75,9 @@ public class ForumServiceImpl implements ForumService {
     public ForumDetailResponse getForum(String slug, String username) {
         Forum forum = requireForum(slug);
         User user = requireUser(username);
-        boolean isAdmin = isAdminOrOwner(forum, user);
+        boolean owner = isOwner(forum, user);
+        boolean isAdmin = owner || memberRepo.findByForumAndUser(forum, user)
+                .map(m -> m.getRole() == ForumRole.ADMIN).orElse(false);
         boolean isMod = !isAdmin && memberRepo.findByForumAndUser(forum, user)
                 .map(m -> m.getRole() == ForumRole.MODERATOR).orElse(false);
         List<ForumCategoryResponse> cats = categoryRepo.findByForum(forum).stream()
@@ -85,7 +87,7 @@ public class ForumServiceImpl implements ForumService {
                 forum.getPublicId(), forum.getName(), forum.getSlug(),
                 forum.getDescription(), forum.getBanner(),
                 usernameOf(forum.getOwner()), cats,
-                threadCount, forum.getCreatedAt(), isAdmin, isMod
+                threadCount, forum.getCreatedAt(), isAdmin, isMod, owner
         );
     }
 
@@ -276,6 +278,35 @@ public class ForumServiceImpl implements ForumService {
                 || memberRepo.existsByForumAndUser(reply.getThread().getForum(), user);
         if (!isAuthor && !isStaff) throw new ForbiddenException("Cannot delete this reply");
         replyRepo.delete(reply);
+    }
+
+    @Override
+    @Transactional
+    public ThreadDetailResponse updateThread(UUID publicId, UpdateThreadRequest req, String username) {
+        ForumThread thread = requireThread(publicId);
+        User user = requireUser(username);
+        if (!thread.getAuthor().getId().equals(user.getId()))
+            throw new ForbiddenException("Cannot edit this thread");
+        if (req.title() != null) thread.setTitle(req.title());
+        if (req.body()  != null) thread.setBody(req.body());
+        threadRepo.save(thread);
+        List<ReplyResponse> replies = replyRepo
+                .findByThreadPublicIdOrderByCreatedAtAsc(publicId)
+                .stream().map(this::toReplyResponse).toList();
+        return toDetail(thread, replies);
+    }
+
+    @Override
+    @Transactional
+    public ReplyResponse updateReply(UUID publicId, UpdateReplyRequest req, String username) {
+        Reply reply = replyRepo.findByPublicId(publicId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Reply", publicId));
+        User user = requireUser(username);
+        if (!reply.getAuthor().getId().equals(user.getId()))
+            throw new ForbiddenException("Cannot edit this reply");
+        reply.setBody(req.body());
+        replyRepo.save(reply);
+        return toReplyResponse(reply);
     }
 
     // ── Private helpers ───────────────────────────────────────────

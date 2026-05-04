@@ -8,5 +8,5 @@ public record ForumDetailResponse(
         UUID publicId, String name, String slug, String description, String banner,
         String ownerUsername, List<ForumCategoryResponse> categories,
         long threadCount, LocalDateTime createdAt,
-        boolean isAdmin, boolean isModerator// current-user context flags
+        boolean isAdmin, boolean isModerator, boolean isOwner
 ) {}

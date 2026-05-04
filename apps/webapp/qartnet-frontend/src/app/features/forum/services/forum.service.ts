@@ -12,8 +12,11 @@ import {
   ThreadDetailResponse,
   ReplyResponse,
   CreateForumRequest,
+  UpdateForumRequest,
   CreateThreadRequest,
+  UpdateThreadRequest,
   CreateReplyRequest,
+  UpdateReplyRequest,
   Page,
 } from '../models/forum.models';
 
@@ -26,7 +29,7 @@ export class ForumService {
 
   getForums(query = '', page = 0, size = 12): Observable<Page<ForumSummaryResponse>> {
     const params = new HttpParams()
-      .set('query', query)
+      .set('q', query)
       .set('page', page)
       .set('size', size);
     return this.http
@@ -46,12 +49,32 @@ export class ForumService {
       .pipe(map((res) => res.data!));
   }
 
+  updateForum(slug: string, req: UpdateForumRequest): Observable<ForumSummaryResponse> {
+    return this.http
+      .patch<ApiResponse<ForumSummaryResponse>>(`${this.api}/forums/${slug}`, req)
+      .pipe(map((res) => res.data!));
+  }
+
+  deleteForum(slug: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/forums/${slug}`);
+  }
+
   // ── Categories ────────────────────────────────────────────────
 
   getCategories(slug: string): Observable<ForumCategoryResponse[]> {
     return this.http
       .get<ApiResponse<ForumCategoryResponse[]>>(`${this.api}/forums/${slug}/categories`)
       .pipe(map((res) => res.data!));
+  }
+
+  createCategory(slug: string, name: string): Observable<ForumCategoryResponse> {
+    return this.http
+      .post<ApiResponse<ForumCategoryResponse>>(`${this.api}/forums/${slug}/categories`, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  deleteCategory(slug: string, catPublicId: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/forums/${slug}/categories/${catPublicId}`);
   }
 
   // ── Threads ───────────────────────────────────────────────────
@@ -63,7 +86,7 @@ export class ForumService {
     size = 10,
   ): Observable<Page<ThreadSummaryResponse>> {
     let params = new HttpParams().set('page', page).set('size', size);
-    if (categoryPublicId) params = params.set('categoryPublicId', categoryPublicId);
+    if (categoryPublicId) params = params.set('category', categoryPublicId);
     return this.http
       .get<ApiResponse<Page<ThreadSummaryResponse>>>(`${this.api}/forums/${slug}/threads`, { params })
       .pipe(map((res) => res.data!));
@@ -81,9 +104,14 @@ export class ForumService {
       .pipe(map((res) => res.data!));
   }
 
-  deleteThread(publicId: string): Observable<void> {
+  updateThread(publicId: string, req: UpdateThreadRequest): Observable<ThreadDetailResponse> {
     return this.http
-      .delete<void>(`${this.api}/threads/${publicId}`);
+      .patch<ApiResponse<ThreadDetailResponse>>(`${this.api}/threads/${publicId}`, req)
+      .pipe(map((res) => res.data!));
+  }
+
+  deleteThread(publicId: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/threads/${publicId}`);
   }
 
   // ── Replies ───────────────────────────────────────────────────
@@ -94,8 +122,13 @@ export class ForumService {
       .pipe(map((res) => res.data!));
   }
 
-  deleteReply(publicId: string): Observable<void> {
+  updateReply(publicId: string, req: UpdateReplyRequest): Observable<ReplyResponse> {
     return this.http
-      .delete<void>(`${this.api}/replies/${publicId}`);
+      .patch<ApiResponse<ReplyResponse>>(`${this.api}/replies/${publicId}`, req)
+      .pipe(map((res) => res.data!));
+  }
+
+  deleteReply(publicId: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/replies/${publicId}`);
   }
 }

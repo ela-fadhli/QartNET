@@ -30,8 +30,9 @@ export interface ForumDetailResponse {
   categories: ForumCategoryResponse[];
   threadCount: number;
   createdAt: string;
-  admin: boolean;
-  moderator: boolean;
+  isAdmin: boolean;
+  isModerator: boolean;
+  isOwner: boolean;
 }
 
 export interface TagResponse {
@@ -91,6 +92,21 @@ export interface CreateThreadRequest {
 export interface CreateReplyRequest {
   body: string;
   parentReplyPublicId: string | null;
+}
+
+export interface UpdateForumRequest {
+  name?: string | null;
+  description?: string | null;
+  banner?: string | null;
+}
+
+export interface UpdateThreadRequest {
+  title?: string | null;
+  body?: string | null;
+}
+
+export interface UpdateReplyRequest {
+  body: string;
 }
 
 export interface Page<T> {
