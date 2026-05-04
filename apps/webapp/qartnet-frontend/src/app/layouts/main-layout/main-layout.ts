@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../features/auth/services/auth.service';
 import { WebSocketService } from '../../core/services/websocket.service';
+import { AiChatbotComponent } from '../../features/ai-chatbot/components/ai-chatbot/ai-chatbot';
 
 @Component({
   selector: 'app-main-layout',
@@ -21,6 +22,7 @@ import { WebSocketService } from '../../core/services/websocket.service';
     BadgeModule,
     ButtonModule,
     InputTextModule,
+    AiChatbotComponent,
   ],
   templateUrl: './main-layout.html',
   styles: [`
