@@ -84,6 +84,11 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Profile profile;
 
+    public void setRole(Role role) {
+        this.roles.clear();
+        this.roles.add(role);
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -100,7 +105,4 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    public void setRole(Role role) {
-
-    }
 }

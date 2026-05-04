@@ -242,7 +242,9 @@ public class ForumServiceImpl implements ForumService {
         ForumThread thread = requireThread(publicId);
         User user = requireUser(username);
         boolean isAuthor = thread.getAuthor().getId().equals(user.getId());
-        boolean isStaff = isOwner(thread.getForum(), user) || memberRepo.existsByForumAndUser(thread.getForum(), user);
+        boolean isStaff = isAdminOrOwner(thread.getForum(), user)
+                || memberRepo.findByForumAndUser(thread.getForum(), user)
+                   .map(m -> m.getRole() == ForumRole.MODERATOR).orElse(false);
         if (!isAuthor && !isStaff) throw new ForbiddenException("Cannot delete this thread");
         threadRepo.delete(thread);
     }
@@ -274,8 +276,10 @@ public class ForumServiceImpl implements ForumService {
                 .orElseThrow(() -> ResourceNotFoundException.of("Reply", replyPublicId));
         User user = requireUser(username);
         boolean isAuthor = reply.getAuthor().getId().equals(user.getId());
-        boolean isStaff = isOwner(reply.getThread().getForum(), user)
-                || memberRepo.existsByForumAndUser(reply.getThread().getForum(), user);
+        Forum replyForum = reply.getThread().getForum();
+        boolean isStaff = isAdminOrOwner(replyForum, user)
+                || memberRepo.findByForumAndUser(replyForum, user)
+                   .map(m -> m.getRole() == ForumRole.MODERATOR).orElse(false);
         if (!isAuthor && !isStaff) throw new ForbiddenException("Cannot delete this reply");
         replyRepo.delete(reply);
     }

@@ -18,9 +18,10 @@ spring:
         format_sql: true
         default_batch_fetch_size: 20
 
-  data:
-    mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/qartnet}
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
@@ -35,7 +36,7 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8082}
 
 springdoc:
   api-docs:
@@ -50,9 +51,10 @@ app:
     expiration: ${JWT_EXPIRATION_MS:900000}
   refresh-token:
     expiration-ms: ${REFRESH_TOKEN_EXPIRATION_MS:604800000}
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}
   email:
     verification-expiration-hours: 24
-    frontend-url: ${FRONTEND_URL:http://localhost:4200}
     domain-whitelist: ${EMAIL_DOMAIN:enicarthage.rnu.tn}
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4200}

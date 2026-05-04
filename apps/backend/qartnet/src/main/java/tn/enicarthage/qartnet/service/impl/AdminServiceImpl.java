@@ -15,6 +15,7 @@ import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.service.IAdminService;
 import tn.enicarthage.qartnet.shared.enums.*;
+import tn.enicarthage.qartnet.shared.exception.BadRequestException;
 import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,8 @@ public class AdminServiceImpl implements IAdminService {
     private final UserRepository userRepository;
     private final ContentReportRepository reportRepository;
     private final ActivityLogRepository activityLogRepository;
+    private final ForumThreadRepository threadRepository;
+    private final ReplyRepository replyRepository;
 
     @Override
     public Page<UserAdminResponse> listUsers(String search, AccountStatus status, Pageable pageable) {
@@ -125,6 +128,19 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     @Transactional
     public void deleteContent(String contentType, Long contentId, String adminPublicId) {
+        switch (contentType.toLowerCase()) {
+            case "thread" -> {
+                if (!threadRepository.existsById(contentId))
+                    throw ResourceNotFoundException.of("Thread", contentId);
+                threadRepository.deleteById(contentId);
+            }
+            case "reply" -> {
+                if (!replyRepository.existsById(contentId))
+                    throw ResourceNotFoundException.of("Reply", contentId);
+                replyRepository.deleteById(contentId);
+            }
+            default -> throw new BadRequestException("Unknown content type: " + contentType);
+        }
         logAdminAction(adminPublicId, ActivityType.ADMIN_CONTENT_DELETED,
                 "Deleted " + contentType + " #" + contentId);
     }

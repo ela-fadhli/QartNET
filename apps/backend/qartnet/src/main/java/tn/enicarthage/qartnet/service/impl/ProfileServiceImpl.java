@@ -23,7 +23,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ProfileResponse getMyProfile(UUID publicId) {
         User user = findUser(publicId);
         Profile profile = findProfile(user);
@@ -69,8 +69,12 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private Profile findProfile(User user) {
-        return profileRepository.findByUser(user)
-                .orElseThrow(() -> ResourceNotFoundException.of("Profile", user.getPublicId()));
+        return profileRepository.findByUser(user).orElseGet(() -> {
+            Profile profile = new Profile();
+            profile.setUser(user);
+            profile.setUsername(user.getUsername());
+            return profileRepository.save(profile);
+        });
     }
 
     private ProfileResponse toResponse(User user, Profile profile) {

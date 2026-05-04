@@ -45,10 +45,11 @@
 
     <!-- Footer -->
     <div class="px-3 py-4 border-t border-[#C9A84C]/10 flex flex-col gap-1">
-      <a routerLink="/profile"
+      <a href="/profile/me" target="_blank" rel="noopener"
          class="nav-item">
         <i class="pi pi-user text-sm"></i>
         <span>My profile</span>
+        <i class="pi pi-external-link text-xs ml-auto opacity-50"></i>
       </a>
       <button (click)="logout()"
               class="nav-item w-full text-left text-[#E07070]/70 hover:text-[#E07070]">
