@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import tn.enicarthage.qartnet.service.IEmailService;
+import tn.enicarthage.qartnet.service.EmailService;
 
 @Service
 @ConditionalOnMissingBean(JavaMailSender.class)
-public class LogEmailServiceImpl implements IEmailService {
+public class LogEmailServiceImpl implements EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(LogEmailServiceImpl.class);
 

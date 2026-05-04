@@ -1,0 +1,101 @@
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-['Cinzel',serif] text-[1.75rem] font-semibold text-[#E8D5A3] tracking-[0.03em]">Forums</h1>
+      <p class="text-sm text-[#E8D5A3]/40 mt-1">Discover communities or create your own</p>
+    </div>
+    <a routerLink="/forum/new">
+      <p-button label="Create Forum" icon="pi pi-plus" styleClass="auth-btn !w-auto !px-5" />
+    </a>
+  </div>
+
+  <!-- Search -->
+  <div class="relative">
+    <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#E8D5A3]/25 text-sm pointer-events-none"></i>
+    <input
+      type="text"
+      [formControl]="searchControl"
+      placeholder="Search forums…"
+      class="auth-input w-full !pl-9"
+    />
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (_ of [1,2,3,4,5,6]; track $index) {
+        <p-skeleton height="140px" styleClass="!rounded-xl !bg-[#0D1221]" />
+      }
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (forumsPage()?.content?.length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <i class="pi pi-comments text-4xl text-[#E8D5A3]/10 mb-4"></i>
+      <p class="text-sm text-[#E8D5A3]/40">No forums found.</p>
+      @if (searchControl.value) {
+        <p class="text-xs text-[#E8D5A3]/25 mt-1">Try a different search term.</p>
+      } @else {
+        <p class="text-xs text-[#E8D5A3]/25 mt-1">Be the first to create a community.</p>
+      }
+    </div>
+  }
+
+  <!-- Forum grid -->
+  @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (forum of forumsPage()!.content; track forum.publicId) {
+        <a
+          [routerLink]="['/forum', forum.slug]"
+          class="flex flex-col gap-3 p-5 bg-[#0D1221] border border-[#C9A84C]/10 rounded-xl hover:border-[#C9A84C]/30 hover:bg-[#C9A84C]/5 transition-colors group cursor-pointer">
+
+          <div class="flex items-start justify-between gap-2">
+            <h2 class="text-sm font-semibold text-[#E8D5A3]/85 group-hover:text-[#E8D5A3] transition-colors leading-snug">
+              {{ forum.name }}
+            </h2>
+            <span class="text-[0.65rem] text-[#C9A84C]/50 shrink-0 mt-0.5">f/{{ forum.slug }}</span>
+          </div>
+
+          @if (forum.description) {
+            <p class="text-xs text-[#E8D5A3]/40 leading-relaxed line-clamp-2 flex-1">{{ forum.description }}</p>
+          } @else {
+            <div class="flex-1"></div>
+          }
+
+          <div class="flex items-center justify-between text-[0.68rem] text-[#E8D5A3]/30 pt-1 border-t border-[#C9A84C]/8">
+            <span class="flex items-center gap-1.5">
+              <i class="pi pi-comments text-[0.6rem]"></i>
+              {{ forum.threadCount }} thread{{ forum.threadCount !== 1 ? 's' : '' }}
+            </span>
+            <span>by {{ forum.ownerUsername }}</span>
+          </div>
+        </a>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (forumsPage()!.totalPages > 1) {
+      <div class="flex items-center justify-between pt-2">
+        <button
+          (click)="prevPage()"
+          [disabled]="forumsPage()!.first"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs text-[#E8D5A3]/50 border border-[#C9A84C]/15 hover:border-[#C9A84C]/35 hover:text-[#E8D5A3]/75 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          <i class="pi pi-chevron-left text-[0.6rem]"></i> Previous
+        </button>
+        <span class="text-xs text-[#E8D5A3]/30">
+          Page {{ currentPage() + 1 }} of {{ forumsPage()!.totalPages }}
+        </span>
+        <button
+          (click)="nextPage()"
+          [disabled]="forumsPage()!.last"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs text-[#E8D5A3]/50 border border-[#C9A84C]/15 hover:border-[#C9A84C]/35 hover:text-[#E8D5A3]/75 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+          Next <i class="pi pi-chevron-right text-[0.6rem]"></i>
+        </button>
+      </div>
+    }
+  }
+
+</div>

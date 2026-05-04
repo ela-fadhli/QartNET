@@ -6,7 +6,7 @@ import tn.enicarthage.qartnet.dto.request.RegisterRequest;
 import tn.enicarthage.qartnet.dto.request.ResetPasswordRequest;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
 
-public interface IAuthService {
+public interface AuthService {
 
     AuthResponse register(RegisterRequest request);
 

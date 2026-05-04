@@ -1,0 +1,101 @@
+<div class="max-w-xl">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <a routerLink="/forum" class="inline-flex items-center gap-1.5 text-xs text-[#E8D5A3]/35 hover:text-[#C9A84C]/70 transition-colors mb-4">
+      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forums
+    </a>
+    <h1 class="font-['Cinzel',serif] text-[1.75rem] font-semibold text-[#E8D5A3] tracking-[0.03em]">Create Forum</h1>
+    <p class="text-sm text-[#E8D5A3]/40 mt-1">Start your own community</p>
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" [textContent]="error()!" styleClass="w-full mb-5" />
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-5 bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-6">
+
+    <!-- Name -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="forum-name">
+        Name <span class="text-[#E07070]">*</span>
+      </label>
+      <input
+        pInputText
+        id="forum-name"
+        type="text"
+        formControlName="name"
+        placeholder="e.g. ENICarthage Hub"
+        class="auth-input"
+        [class.input-error]="name.invalid && name.touched"
+        (input)="onNameInput()"
+      />
+      @if (name.invalid && name.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">
+          {{ name.hasError('required') ? 'Name is required' : 'Name must be between 3 and 100 characters' }}
+        </small>
+      }
+    </div>
+
+    <!-- Slug -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="forum-slug">
+        Slug <span class="text-[#E07070]">*</span>
+        <span class="text-[#E8D5A3]/25 font-normal ml-1">(auto-generated, can edit)</span>
+      </label>
+      <div class="flex items-center auth-input !p-0 overflow-hidden" [class.input-error]="slug.invalid && slug.touched">
+        <span class="px-3 text-xs text-[#E8D5A3]/30 border-r border-[#C9A84C]/10 h-full flex items-center shrink-0 select-none">f/</span>
+        <input
+          pInputText
+          id="forum-slug"
+          type="text"
+          formControlName="slug"
+          placeholder="enicarthage-hub"
+          class="flex-1 bg-transparent border-none outline-none px-3 py-2.5 text-sm text-[#E8D5A3]/80 placeholder:text-[#E8D5A3]/20"
+        />
+      </div>
+      @if (slug.invalid && slug.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">
+          Slug must be 3–100 lowercase letters, numbers, or hyphens
+        </small>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="forum-desc">
+        Description <span class="text-[#E8D5A3]/25 font-normal">(optional)</span>
+      </label>
+      <textarea
+        pTextarea
+        id="forum-desc"
+        formControlName="description"
+        placeholder="What is this community about?"
+        rows="4"
+        class="auth-input resize-none"
+        [class.input-error]="description.invalid && description.touched"
+      ></textarea>
+      @if (description.invalid && description.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">Description must be under 500 characters</small>
+      }
+    </div>
+
+    <div class="flex gap-3 pt-1">
+      <p-button
+        type="submit"
+        label="Create Forum"
+        [loading]="submitting()"
+        styleClass="auth-btn !w-auto !px-6" />
+      <a routerLink="/forum">
+        <p-button
+          type="button"
+          label="Cancel"
+          styleClass="!w-auto !px-6 !bg-transparent !border !border-[#C9A84C]/30 !text-[#E8D5A3]/60 hover:!border-[#C9A84C]/60" />
+      </a>
+    </div>
+
+  </form>
+</div>

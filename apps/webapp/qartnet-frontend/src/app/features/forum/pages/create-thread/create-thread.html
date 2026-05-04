@@ -1,0 +1,121 @@
+<div class="max-w-2xl">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <a [routerLink]="['/forum', slug]" class="inline-flex items-center gap-1.5 text-xs text-[#E8D5A3]/35 hover:text-[#C9A84C]/70 transition-colors mb-4">
+      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forum
+    </a>
+    <h1 class="font-['Cinzel',serif] text-[1.75rem] font-semibold text-[#E8D5A3] tracking-[0.03em]">New Thread</h1>
+    <p class="text-sm text-[#E8D5A3]/40 mt-1">Start a discussion in this community</p>
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" [textContent]="error()!" styleClass="w-full mb-5" />
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-5 bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-6">
+
+    <!-- Category -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]">
+        Category <span class="text-[#E07070]">*</span>
+      </label>
+      <p-select
+        formControlName="categoryPublicId"
+        [options]="categoryOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select a category"
+        styleClass="w-full auth-input !p-0 !border-none"
+      />
+      @if (categoryPublicId.invalid && categoryPublicId.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">Category is required</small>
+      }
+    </div>
+
+    <!-- Tags chip input -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]">
+        Tags <span class="text-[#E8D5A3]/25 font-normal">(optional — press Enter or , to add)</span>
+      </label>
+      <div class="auth-input flex flex-wrap gap-1.5 min-h-[42px] cursor-text">
+        @for (tag of tagNames(); track tag) {
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#C9A84C]/15 border border-[#C9A84C]/30 text-[0.7rem] text-[#C9A84C]/80">
+            {{ tag }}
+            <button type="button" (click)="removeTag(tag)" class="text-[#C9A84C]/50 hover:text-[#C9A84C] transition-colors leading-none">
+              <i class="pi pi-times text-[0.55rem]"></i>
+            </button>
+          </span>
+        }
+        @if (tagNames().length < 10) {
+          <input
+            type="text"
+            placeholder="{{ tagNames().length === 0 ? 'e.g. spring-boot, angular' : 'Add tag…' }}"
+            (keydown)="onTagKeydown($event)"
+            class="flex-1 min-w-[120px] bg-transparent outline-none text-xs text-[#E8D5A3]/70 placeholder:text-[#E8D5A3]/25"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="title">
+        Title <span class="text-[#E07070]">*</span>
+      </label>
+      <input
+        pInputText
+        id="title"
+        type="text"
+        formControlName="title"
+        placeholder="A clear, descriptive title"
+        class="auth-input"
+        [class.input-error]="title.invalid && title.touched"
+      />
+      @if (title.invalid && title.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">
+          {{ title.hasError('required') ? 'Title is required' : 'Title must be between 5 and 200 characters' }}
+        </small>
+      }
+    </div>
+
+    <!-- Body -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[0.75rem] font-medium text-[#E8D5A3]/55 tracking-[0.03em]" for="body">
+        Content <span class="text-[#E07070]">*</span>
+      </label>
+      <textarea
+        pTextarea
+        id="body"
+        formControlName="body"
+        placeholder="Write your post here…"
+        rows="8"
+        class="auth-input resize-none"
+        [class.input-error]="body.invalid && body.touched"
+      ></textarea>
+      @if (body.invalid && body.touched) {
+        <small class="text-[0.72rem] text-[#E07070]">
+          {{ body.hasError('required') ? 'Content is required' : 'Content must be at least 10 characters' }}
+        </small>
+      }
+    </div>
+
+    <div class="flex gap-3 pt-1">
+      <p-button
+        type="submit"
+        label="Post Thread"
+        [loading]="submitting()"
+        styleClass="auth-btn !w-auto !px-6" />
+      <a [routerLink]="['/forum', slug]">
+        <p-button
+          type="button"
+          label="Cancel"
+          styleClass="!w-auto !px-6 !bg-transparent !border !border-[#C9A84C]/30 !text-[#E8D5A3]/60 hover:!border-[#C9A84C]/60" />
+      </a>
+    </div>
+
+  </form>
+</div>

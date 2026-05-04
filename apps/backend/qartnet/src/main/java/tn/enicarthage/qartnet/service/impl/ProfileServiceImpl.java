@@ -9,7 +9,7 @@ import tn.enicarthage.qartnet.model.Profile;
 import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.ProfileRepository;
 import tn.enicarthage.qartnet.repository.UserRepository;
-import tn.enicarthage.qartnet.service.IProfileService;
+import tn.enicarthage.qartnet.service.ProfileService;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
 import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
 
@@ -17,12 +17,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileServiceImpl implements IProfileService {
+public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public ProfileResponse getMyProfile(UUID publicId) {
         User user = findUser(publicId);
         Profile profile = findProfile(user);
@@ -55,6 +56,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProfileResponse getPublicProfile(String username) {
         Profile profile = profileRepository.findByUsername(username)
                 .orElseThrow(() -> ResourceNotFoundException.of("Profile", username));

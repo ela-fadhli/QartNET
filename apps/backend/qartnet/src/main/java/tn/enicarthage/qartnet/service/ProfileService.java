@@ -5,7 +5,7 @@ import tn.enicarthage.qartnet.dto.response.ProfileResponse;
 
 import java.util.UUID;
 
-public interface IProfileService {
+public interface ProfileService {
 
     ProfileResponse getMyProfile(UUID publicId);
 
