@@ -9,44 +9,18 @@
 }
 
 @if (!error()) {
-  <div class="flex gap-6">
+  <div class="flex gap-6 max-w-7xl mx-auto w-full">
 
-    <!-- Sidebar -->
-    <aside class="w-52 shrink-0 flex flex-col gap-5">
+    <!-- Left sidebar: categories -->
+    <aside class="w-48 shrink-0 flex flex-col gap-4 pt-1">
 
-      <!-- Forum info -->
       @if (loadingForum()) {
-        <div class="flex flex-col gap-2">
-          <p-skeleton height="20px" styleClass="!bg-[#0D1221]" />
-          <p-skeleton height="48px" styleClass="!bg-[#0D1221] !rounded-lg" />
+        <div class="flex flex-col gap-1.5">
+          @for (_ of [1,2,3,4]; track $index) {
+            <p-skeleton height="28px" styleClass="!bg-[#0D1221] !rounded-md" />
+          }
         </div>
       } @else if (forum()) {
-        <div class="flex flex-col gap-2 pb-4 border-b border-[#C9A84C]/8">
-          <div>
-            <p class="text-xs font-semibold text-[#E8D5A3]/80 leading-snug">{{ forum()!.name }}</p>
-            <p class="text-[0.65rem] text-[#C9A84C]/50 mt-0.5">f/{{ forum()!.slug }}</p>
-          </div>
-          @if (forum()!.description) {
-            <p class="text-[0.68rem] text-[#E8D5A3]/35 leading-relaxed">{{ forum()!.description }}</p>
-          }
-          <p class="text-[0.65rem] text-[#E8D5A3]/25">
-            <i class="pi pi-user text-[0.55rem] mr-1"></i>{{ forum()!.ownerUsername }}
-          </p>
-
-          <!-- Manage button (admin/owner only) -->
-          @if (forum()!.isAdmin || forum()!.isOwner) {
-            <button
-              (click)="toggleManage()"
-              class="mt-1 text-left text-[0.68rem] text-[#C9A84C]/60 hover:text-[#C9A84C] transition-colors flex items-center gap-1">
-              <i class="pi pi-cog text-[0.6rem]"></i>
-              {{ showManage() ? 'Close panel' : 'Manage Forum' }}
-            </button>
-          }
-        </div>
-      }
-
-      <!-- Categories filter -->
-      @if (forum()) {
         <div>
           <p class="text-[0.7rem] font-semibold text-[#C9A84C] uppercase tracking-[0.1em] mb-2">Categories</p>
           <div class="flex flex-col gap-0.5">
@@ -72,10 +46,10 @@
 
     </aside>
 
-    <!-- Main content -->
+    <!-- Center: thread list -->
     <div class="flex-1 min-w-0 flex flex-col gap-4">
 
-      <!-- Header -->
+      <!-- Breadcrumb + header -->
       <div class="flex items-center justify-between">
         <div>
           <nav class="flex items-center gap-1.5 text-[0.68rem] text-[#E8D5A3]/30 mb-1.5">
@@ -306,5 +280,66 @@
       }
 
     </div>
+
+    <!-- Right sidebar: forum about -->
+    <aside class="w-64 shrink-0 flex flex-col gap-4 pt-1">
+
+      @if (loadingForum()) {
+        <div class="bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-4 flex flex-col gap-3">
+          <p-skeleton height="16px" width="60%" styleClass="!bg-[#0A0E1A]" />
+          <p-skeleton height="48px" styleClass="!bg-[#0A0E1A] !rounded-md" />
+          <p-skeleton height="12px" styleClass="!bg-[#0A0E1A]" />
+        </div>
+      } @else if (forum()) {
+        <!-- About card -->
+        <div class="bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg overflow-hidden">
+          <div class="px-4 py-3 border-b border-[#C9A84C]/8">
+            <p class="text-[0.7rem] font-semibold text-[#C9A84C] uppercase tracking-[0.1em]">About</p>
+          </div>
+          <div class="p-4 flex flex-col gap-3">
+            <div>
+              <p class="text-sm font-semibold text-[#E8D5A3]/85 leading-snug font-['Cinzel',serif]">{{ forum()!.name }}</p>
+              <p class="text-[0.65rem] text-[#C9A84C]/45 mt-0.5">f/{{ forum()!.slug }}</p>
+            </div>
+            @if (forum()!.description) {
+              <p class="text-xs text-[#E8D5A3]/50 leading-relaxed">{{ forum()!.description }}</p>
+            }
+            <div class="flex flex-col gap-1.5 pt-1 border-t border-[#C9A84C]/8">
+              <div class="flex items-center justify-between">
+                <span class="text-[0.68rem] text-[#E8D5A3]/35">Threads</span>
+                <span class="text-[0.68rem] font-medium text-[#E8D5A3]/60">{{ forum()!.threadCount }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[0.68rem] text-[#E8D5A3]/35">Owner</span>
+                <span class="text-[0.68rem] font-medium text-[#C9A84C]/60">{{ forum()!.ownerUsername }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[0.68rem] text-[#E8D5A3]/35">Categories</span>
+                <span class="text-[0.68rem] font-medium text-[#E8D5A3]/60">{{ forum()!.categories.length }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manage button (admin/owner only) -->
+        @if (forum()!.isAdmin || forum()!.isOwner) {
+          <button
+            (click)="toggleManage()"
+            class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs border transition-colors"
+            [class.border-[#C9A84C]/40]="showManage()"
+            [class.text-[#C9A84C]]="showManage()"
+            [class.bg-[#C9A84C]/8]="showManage()"
+            [class.border-[#C9A84C]/15]="!showManage()"
+            [class.text-[#E8D5A3]/50]="!showManage()"
+            [class.hover:border-[#C9A84C]/35]="!showManage()"
+            [class.hover:text-[#E8D5A3]/80]="!showManage()">
+            <i class="pi pi-cog text-[0.65rem]"></i>
+            {{ showManage() ? 'Close panel' : 'Manage Forum' }}
+          </button>
+        }
+      }
+
+    </aside>
+
   </div>
 }
