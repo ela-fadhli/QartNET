@@ -11,12 +11,13 @@ import tn.enicarthage.qartnet.dto.request.*;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
 import tn.enicarthage.qartnet.model.ActivityLog;
 import tn.enicarthage.qartnet.model.PasswordResetToken;
+import tn.enicarthage.qartnet.model.Profile;
 import tn.enicarthage.qartnet.model.RefreshToken;
 import tn.enicarthage.qartnet.model.User;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.security.JwtService;
-import tn.enicarthage.qartnet.service.IAuthService;
-import tn.enicarthage.qartnet.service.IEmailService;
+import tn.enicarthage.qartnet.service.AuthService;
+import tn.enicarthage.qartnet.service.EmailService;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.ActivityType;
 import tn.enicarthage.qartnet.shared.enums.Role;
@@ -32,16 +33,17 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements IAuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ActivityLogRepository activityLogRepository;
-    private final IEmailService emailService;
+    private final EmailService emailService;
 
     @Value("${app.frontend.url:http://localhost:4200}")
     private String frontendUrl;
@@ -63,6 +65,7 @@ public class AuthServiceImpl implements IAuthService {
         if (userRepository.existsByEmail(request.email())) {
             throw new ConflictException("Email is already in use");
         }
+
         if (userRepository.existsByUsername(request.username())) {
             throw new ConflictException("Username is already taken");
         }
@@ -76,6 +79,8 @@ public class AuthServiceImpl implements IAuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .firstName(request.firstName())
                 .lastName(request.lastName())
+                .dateOfBirth(request.dateOfBirth())
+                .phoneNumber(request.phoneNumber())
                 .roles(Set.of(Role.STUDENT))
                 .accountStatus(AccountStatus.PENDING)
                 .emailVerified(false)
@@ -85,10 +90,30 @@ public class AuthServiceImpl implements IAuthService {
 
         userRepository.save(user);
 
+        Profile profile = new Profile();
+        profile.setUsername(request.username());
+        profile.setUser(user);
+        profileRepository.save(profile);
+
         String verificationLink = frontendUrl + "/auth/verify-email?token=" + verificationToken;
         emailService.sendEmailVerification(user.getEmail(), verificationLink);
 
         logActivity(user, ActivityType.USER_REGISTER, null, null);
+    }
+
+    private String generateUniqueUsername(String email) {
+        String base = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9_]", "");
+        if (base.isEmpty()) base = "user";
+        String candidate = base;
+        int attempt = 0;
+        while (profileRepository.existsByUsername(candidate)) {
+            if (++attempt > 10) {
+                candidate = base + UUID.randomUUID().toString().substring(0, 6);
+                break;
+            }
+            candidate = base + (int) (Math.random() * 9000 + 1000);
+        }
+        return candidate;
     }
 
     @Override

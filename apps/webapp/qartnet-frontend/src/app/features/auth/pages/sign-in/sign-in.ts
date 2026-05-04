@@ -41,7 +41,7 @@ export class AuthSignInComponent {
 
     this.authService.login(payload).subscribe({
       next: () => {
-        const destination = this.authService.hasRole('ADMIN') ? '/admin/dashboard' : '/profile';
+        const destination = this.authService.hasRole('ADMIN') ? '/admin/dashboard' : '/profile/me';
         this.router.navigate([destination]);
       },
       error: (err) => {

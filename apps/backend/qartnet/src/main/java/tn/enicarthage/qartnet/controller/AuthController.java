@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.enicarthage.qartnet.dto.request.*;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
-import tn.enicarthage.qartnet.service.IAuthService;
+import tn.enicarthage.qartnet.service.AuthService;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 
 @RestController
@@ -18,7 +18,7 @@ import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 @Tag(name = "Authentication", description = "Registration, login, token management")
 public class AuthController {
 
-    private final IAuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new account (institutional email required)")

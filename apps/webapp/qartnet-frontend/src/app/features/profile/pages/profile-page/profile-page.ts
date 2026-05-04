@@ -57,7 +57,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.profileService.getMyProfile().subscribe({
+    this.profileService.getMyUserProfile().subscribe({
       next: (p) => {
         this.profile.set(p);
         this.form.patchValue({
@@ -83,7 +83,7 @@ export class ProfilePageComponent implements OnInit {
 
     const { firstName, lastName, bio, profilePictureUrl, skills } = this.form.value;
 
-    this.profileService.updateMyProfile({
+    this.profileService.updateMyUserProfile({
       firstName: firstName || undefined,
       lastName: lastName || undefined,
       bio: bio || undefined,

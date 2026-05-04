@@ -15,11 +15,24 @@ export interface UserProfile {
   lastLoginAt: string | null;
 }
 
+export interface ProfileResponse {
+  username: string;
+  bio: string | null;
+  profilePictureUrl: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  dateOfBirth: string | null;
+  phoneNumber: string | null;
+}
+
 export interface UpdateProfileRequest {
+  username?: string;
   firstName?: string;
   lastName?: string;
   bio?: string;
   profilePictureUrl?: string;
   skills?: string[];
   socialLinks?: Record<string, string>;
+  dateOfBirth?: string;
+  phoneNumber?: string;
 }

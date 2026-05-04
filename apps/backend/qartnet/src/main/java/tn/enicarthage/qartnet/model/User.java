@@ -5,6 +5,7 @@ import lombok.*;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -35,6 +36,9 @@ public class User {
 
     private String firstName;
     private String lastName;
+
+    private LocalDate dateOfBirth;
+    private String phoneNumber;
 
     @Column(length = 1000)
     private String bio;
@@ -77,6 +81,9 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Profile profile;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -91,5 +98,8 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public void setRole(Role role) {
     }
 }

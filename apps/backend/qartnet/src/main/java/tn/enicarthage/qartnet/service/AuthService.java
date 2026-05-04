@@ -3,7 +3,7 @@ package tn.enicarthage.qartnet.service;
 import tn.enicarthage.qartnet.dto.request.*;
 import tn.enicarthage.qartnet.dto.response.AuthResponse;
 
-public interface IAuthService {
+public interface AuthService {
 
     void register(RegisterRequest request);
 

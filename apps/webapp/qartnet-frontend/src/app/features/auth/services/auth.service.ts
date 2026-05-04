@@ -10,12 +10,14 @@ import {
 import { ApiResponse } from '../../../shared/models/api-response.model';
 import { TokenService } from '../../../core/services/token.service';
 import { environment } from '../../../../environments/environment';
+import { WebSocketService } from '../../../core/services/websocket.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private tokenService = inject(TokenService);
+  private wsService = inject(WebSocketService);
   private baseUrl = `${environment.apiUrl}/api/auth`;
 
   private isRefreshing = false;
@@ -26,7 +28,10 @@ export class AuthService {
       .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, request)
       .pipe(
         map((res) => res.data!),
-        tap((data) => this.tokenService.saveTokens(data.accessToken, data.refreshToken)),
+        tap((data) => {
+          this.tokenService.saveTokens(data.accessToken, data.refreshToken);
+          this.wsService.connect(data.accessToken);
+        }),
       );
   }
 
@@ -101,6 +106,7 @@ export class AuthService {
         .pipe(catchError(() => EMPTY))
         .subscribe();
     }
+    this.wsService.disconnect();
     this.clearAndRedirect();
   }
 

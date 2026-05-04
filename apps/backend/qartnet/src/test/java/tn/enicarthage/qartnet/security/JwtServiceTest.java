@@ -70,4 +70,12 @@ class JwtServiceTest {
         var claims = jwtService.extractAllClaims(token);
         assertThat(claims.get("roles")).isNotNull();
     }
+
+    @Test
+    void isTokenValid_expiredToken_returnsFalse() {
+        ReflectionTestUtils.setField(jwtService, "expiration", -1000L);
+        String token = jwtService.generateToken(buildUser());
+
+        assertThat(jwtService.isTokenValid(token)).isFalse();
+    }
 }
