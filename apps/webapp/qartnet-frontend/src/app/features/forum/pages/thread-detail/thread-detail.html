@@ -1,7 +1,8 @@
 <!-- Loading -->
 @if (loading()) {
   <div class="flex flex-col gap-4 max-w-3xl">
-    <p-skeleton height="28px" width="60%" styleClass="!bg-[#0D1221]" />
+    <p-skeleton height="20px" width="50%" styleClass="!bg-[#0D1221]" />
+    <p-skeleton height="28px" width="70%" styleClass="!bg-[#0D1221]" />
     <p-skeleton height="160px" styleClass="!rounded-lg !bg-[#0D1221]" />
     <p-skeleton height="80px" styleClass="!rounded-lg !bg-[#0D1221]" />
     <p-skeleton height="80px" styleClass="!rounded-lg !bg-[#0D1221]" />
@@ -13,7 +14,7 @@
   <div class="max-w-3xl">
     <p-message severity="error" [textContent]="error()!" styleClass="w-full" />
     <a routerLink="/forum" class="inline-flex items-center gap-1.5 text-xs text-[#C9A84C]/70 hover:text-[#C9A84C] mt-4 transition-colors">
-      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forum
+      <i class="pi pi-arrow-left text-[0.65rem]"></i> Back to Forums
     </a>
   </div>
 }
@@ -23,39 +24,113 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs text-[#E8D5A3]/30">
-      <a routerLink="/forum" class="hover:text-[#C9A84C]/70 transition-colors">Forum</a>
+      <a routerLink="/forum" class="hover:text-[#C9A84C]/70 transition-colors">Forums</a>
       <i class="pi pi-chevron-right text-[0.55rem]"></i>
-      <a [routerLink]="['/forum/threads']" [queryParams]="{ category: thread()!.category.publicId }" class="hover:text-[#C9A84C]/70 transition-colors">
+      <a [routerLink]="['/forum', thread()!.forumSlug]" class="hover:text-[#C9A84C]/70 transition-colors">
+        {{ thread()!.forumName }}
+      </a>
+      <i class="pi pi-chevron-right text-[0.55rem]"></i>
+      <a
+        [routerLink]="['/forum', thread()!.forumSlug]"
+        [queryParams]="{ category: thread()!.category.publicId }"
+        class="hover:text-[#C9A84C]/70 transition-colors">
         {{ thread()!.category.name }}
       </a>
     </nav>
 
     <!-- Thread body -->
     <article class="bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-6 flex flex-col gap-4">
-      <div>
-        <h1 class="font-['Cinzel',serif] text-xl font-semibold text-[#E8D5A3] leading-snug">{{ thread()!.title }}</h1>
-        <div class="flex items-center gap-3 mt-2 flex-wrap">
-          <span class="text-xs text-[#E8D5A3]/40">by <span class="text-[#E8D5A3]/60">{{ thread()!.authorUsername }}</span></span>
-          <span class="text-[#E8D5A3]/20">·</span>
-          <span class="flex items-center gap-1 text-xs text-[#E8D5A3]/30">
-            <i class="pi pi-eye text-[0.6rem]"></i>{{ thread()!.viewCount }}
-          </span>
-          <span class="flex items-center gap-1 text-xs text-[#E8D5A3]/30">
-            <i class="pi pi-comment text-[0.6rem]"></i>{{ thread()!.replies.length }}
-          </span>
-          @for (tag of thread()!.tags; track tag.publicId) {
-            <span class="px-1.5 py-0.5 rounded text-[0.65rem] border border-[#C9A84C]/20 text-[#C9A84C]/60">{{ tag.name }}</span>
+
+      @if (threadActionError()) {
+        <p-message severity="error" [textContent]="threadActionError()!" styleClass="w-full" />
+      }
+
+      @if (editingThread()) {
+        <!-- Edit mode -->
+        <div class="flex flex-col gap-3">
+          <input
+            pInputText
+            type="text"
+            [ngModel]="editTitle()"
+            (ngModelChange)="editTitle.set($event)"
+            class="auth-input !text-sm font-medium" />
+          <textarea
+            [ngModel]="editBody()"
+            (ngModelChange)="editBody.set($event)"
+            rows="8"
+            class="auth-input resize-none !text-sm leading-relaxed"></textarea>
+          <div class="flex gap-2">
+            <p-button
+              label="Save"
+              (onClick)="saveThread()"
+              [loading]="savingThread()"
+              styleClass="auth-btn !w-auto !px-5 !text-xs" />
+            <button
+              (click)="cancelEditThread()"
+              class="text-xs text-[#E8D5A3]/40 hover:text-[#E8D5A3]/70 transition-colors px-3">
+              Cancel
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- View mode -->
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <h1 class="font-['Cinzel',serif] text-xl font-semibold text-[#E8D5A3] leading-snug">{{ thread()!.title }}</h1>
+            <div class="flex items-center gap-3 mt-2 flex-wrap">
+              <span class="text-xs text-[#E8D5A3]/40">by <span class="text-[#E8D5A3]/60">{{ thread()!.authorUsername }}</span></span>
+              <span class="text-[#E8D5A3]/20">·</span>
+              <span class="flex items-center gap-1 text-xs text-[#E8D5A3]/30">
+                <i class="pi pi-eye text-[0.6rem]"></i>{{ thread()!.viewCount }}
+              </span>
+              <span class="flex items-center gap-1 text-xs text-[#E8D5A3]/30">
+                <i class="pi pi-comment text-[0.6rem]"></i>{{ thread()!.replies.length }}
+              </span>
+              @for (tag of thread()!.tags; track tag.publicId) {
+                <span class="px-1.5 py-0.5 rounded text-[0.65rem] border border-[#C9A84C]/20 text-[#C9A84C]/60">{{ tag.name }}</span>
+              }
+            </div>
+          </div>
+          <!-- Thread author controls -->
+          @if (thread()!.authorUsername === currentUsername()) {
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button
+                (click)="startEditThread()"
+                class="text-[0.68rem] text-[#C9A84C]/50 hover:text-[#C9A84C] transition-colors px-2 py-1 rounded hover:bg-[#C9A84C]/8">
+                <i class="pi pi-pencil text-[0.6rem] mr-1"></i>Edit
+              </button>
+              @if (!deletingThread()) {
+                <button
+                  (click)="deletingThread.set(true)"
+                  class="text-[0.68rem] text-[#E07070]/50 hover:text-[#E07070] transition-colors px-2 py-1 rounded hover:bg-[#E07070]/8">
+                  <i class="pi pi-trash text-[0.6rem] mr-1"></i>Delete
+                </button>
+              } @else {
+                <span class="text-[0.68rem] text-[#E8D5A3]/40">Delete?</span>
+                <button
+                  (click)="confirmDeleteThread()"
+                  class="text-[0.68rem] text-[#E07070] hover:text-[#E07070] border border-[#E07070]/30 px-2 py-0.5 rounded transition-colors hover:bg-[#E07070]/10">
+                  Yes
+                </button>
+                <button
+                  (click)="deletingThread.set(false)"
+                  class="text-[0.68rem] text-[#E8D5A3]/40 hover:text-[#E8D5A3]/70 transition-colors px-1">
+                  No
+                </button>
+              }
+            </div>
           }
         </div>
-      </div>
-      <div class="border-t border-[#C9A84C]/8 pt-4">
-        <p class="text-sm text-[#E8D5A3]/75 leading-relaxed whitespace-pre-wrap">{{ thread()!.body }}</p>
-      </div>
-      <button
-        (click)="setReplyingTo(null)"
-        class="self-start text-xs text-[#C9A84C]/60 hover:text-[#C9A84C] transition-colors mt-1">
-        <i class="pi pi-reply mr-1 text-[0.6rem]"></i>Reply
-      </button>
+        <div class="border-t border-[#C9A84C]/8 pt-4">
+          <p class="text-sm text-[#E8D5A3]/75 leading-relaxed whitespace-pre-wrap">{{ thread()!.body }}</p>
+        </div>
+        <button
+          (click)="setReplyingTo(null)"
+          class="self-start text-xs text-[#C9A84C]/60 hover:text-[#C9A84C] transition-colors mt-1">
+          <i class="pi pi-reply mr-1 text-[0.6rem]"></i>Reply
+        </button>
+      }
+
     </article>
 
     <!-- Replies -->
@@ -66,26 +141,106 @@
         </h2>
 
         @for (reply of topLevelReplies(thread()!.replies); track reply.publicId) {
-          <!-- Top-level reply -->
           <div class="bg-[#0D1221] border border-[#C9A84C]/10 rounded-lg p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium text-[#E8D5A3]/60">{{ reply.authorUsername }}</span>
-              <button
-                (click)="setReplyingTo(reply)"
-                class="text-[0.68rem] text-[#C9A84C]/45 hover:text-[#C9A84C] transition-colors">
-                <i class="pi pi-reply mr-1"></i>Reply
-              </button>
+              <div class="flex items-center gap-1.5">
+                @if (reply.authorUsername === currentUsername()) {
+                  @if (editingReplyId() === reply.publicId) {
+                    <!-- saving state handled inline -->
+                  } @else {
+                    <button
+                      (click)="startEditReply(reply)"
+                      class="text-[0.65rem] text-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors">
+                      <i class="pi pi-pencil"></i>
+                    </button>
+                    <button
+                      (click)="deleteReply(reply.publicId)"
+                      class="text-[0.65rem] text-[#E07070]/40 hover:text-[#E07070] transition-colors">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  }
+                }
+                <button
+                  (click)="setReplyingTo(reply)"
+                  class="text-[0.68rem] text-[#C9A84C]/45 hover:text-[#C9A84C] transition-colors ml-1">
+                  <i class="pi pi-reply mr-1"></i>Reply
+                </button>
+              </div>
             </div>
-            <p class="text-sm text-[#E8D5A3]/75 leading-relaxed whitespace-pre-wrap">{{ reply.body }}</p>
 
-            <!-- Nested replies -->
+            @if (editingReplyId() === reply.publicId) {
+              <div class="flex flex-col gap-2">
+                <textarea
+                  [ngModel]="editReplyBody()"
+                  (ngModelChange)="editReplyBody.set($event)"
+                  rows="3"
+                  class="auth-input resize-none !text-sm"></textarea>
+                <div class="flex gap-2">
+                  <p-button
+                    label="Save"
+                    (onClick)="saveReply(reply.publicId)"
+                    [loading]="savingReply()"
+                    styleClass="auth-btn !w-auto !px-4 !text-xs" />
+                  <button
+                    (click)="cancelEditReply()"
+                    class="text-xs text-[#E8D5A3]/40 hover:text-[#E8D5A3]/70 transition-colors px-2">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <p class="text-sm text-[#E8D5A3]/75 leading-relaxed whitespace-pre-wrap">{{ reply.body }}</p>
+            }
+
             @for (child of childrenOf(reply.publicId, thread()!.replies); track child.publicId) {
               <div class="ml-4 pl-4 border-l border-[#C9A84C]/10 flex flex-col gap-2 pt-2">
-                <span class="text-xs font-medium text-[#E8D5A3]/50">
-                  {{ child.authorUsername }}
-                  <span class="text-[#E8D5A3]/25 font-normal"> replying to {{ reply.authorUsername }}</span>
-                </span>
-                <p class="text-sm text-[#E8D5A3]/70 leading-relaxed whitespace-pre-wrap">{{ child.body }}</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-[#E8D5A3]/50">
+                    {{ child.authorUsername }}
+                    <span class="text-[#E8D5A3]/25 font-normal"> replying to {{ reply.authorUsername }}</span>
+                  </span>
+                  @if (child.authorUsername === currentUsername()) {
+                    <div class="flex items-center gap-1.5">
+                      @if (editingReplyId() !== child.publicId) {
+                        <button
+                          (click)="startEditReply(child)"
+                          class="text-[0.65rem] text-[#C9A84C]/40 hover:text-[#C9A84C] transition-colors">
+                          <i class="pi pi-pencil"></i>
+                        </button>
+                        <button
+                          (click)="deleteReply(child.publicId)"
+                          class="text-[0.65rem] text-[#E07070]/40 hover:text-[#E07070] transition-colors">
+                          <i class="pi pi-trash"></i>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+
+                @if (editingReplyId() === child.publicId) {
+                  <div class="flex flex-col gap-2">
+                    <textarea
+                      [ngModel]="editReplyBody()"
+                      (ngModelChange)="editReplyBody.set($event)"
+                      rows="3"
+                      class="auth-input resize-none !text-sm"></textarea>
+                    <div class="flex gap-2">
+                      <p-button
+                        label="Save"
+                        (onClick)="saveReply(child.publicId)"
+                        [loading]="savingReply()"
+                        styleClass="auth-btn !w-auto !px-4 !text-xs" />
+                      <button
+                        (click)="cancelEditReply()"
+                        class="text-xs text-[#E8D5A3]/40 hover:text-[#E8D5A3]/70 transition-colors px-2">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <p class="text-sm text-[#E8D5A3]/70 leading-relaxed whitespace-pre-wrap">{{ child.body }}</p>
+                }
               </div>
             }
           </div>

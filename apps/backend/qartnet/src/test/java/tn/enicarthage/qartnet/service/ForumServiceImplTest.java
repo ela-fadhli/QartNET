@@ -106,14 +106,14 @@ class ForumServiceImplTest {
     @Test
     void createForum_happyPath_savesForumAndOwnerMember() {
         when(forumRepo.existsBySlug("new-forum")).thenReturn(false);
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(forumRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(memberRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(threadRepo.countByForum(any())).thenReturn(0L);
         when(profileRepo.findByUser(owner)).thenReturn(Optional.of(ownerProfile));
 
         var req = new CreateForumRequest("New Forum", "new-forum", "A description", null);
-        ForumSummaryResponse result = forumService.createForum(req, "owner_user");
+        ForumSummaryResponse result = forumService.createForum(req, owner.getPublicId().toString());
 
         assertThat(result.name()).isEqualTo("New Forum");
         assertThat(result.slug()).isEqualTo("new-forum");
@@ -127,7 +127,7 @@ class ForumServiceImplTest {
         when(forumRepo.existsBySlug("test-forum")).thenReturn(true);
 
         var req = new CreateForumRequest("Test", "test-forum", null, null);
-        assertThatThrownBy(() -> forumService.createForum(req, "owner_user"))
+        assertThatThrownBy(() -> forumService.createForum(req, owner.getPublicId().toString()))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("test-forum");
 
@@ -151,9 +151,9 @@ class ForumServiceImplTest {
     @Test
     void deleteForum_byOwner_deletesForum() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
 
-        forumService.deleteForum("test-forum", "owner_user");
+        forumService.deleteForum("test-forum", owner.getPublicId().toString());
 
         verify(forumRepo).delete(forum);
     }
@@ -161,9 +161,9 @@ class ForumServiceImplTest {
     @Test
     void deleteForum_byNonOwner_throwsForbidden() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
 
-        assertThatThrownBy(() -> forumService.deleteForum("test-forum", "other_user"))
+        assertThatThrownBy(() -> forumService.deleteForum("test-forum", otherUser.getPublicId().toString()))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(forumRepo, never()).delete(any());
@@ -172,13 +172,13 @@ class ForumServiceImplTest {
     @Test
     void updateForum_byAdmin_updatesAndReturns() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(forumRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(threadRepo.countByForum(forum)).thenReturn(0L);
         when(profileRepo.findByUser(owner)).thenReturn(Optional.of(ownerProfile));
 
         var req = new UpdateForumRequest("Updated Name", "New description", null);
-        ForumSummaryResponse result = forumService.updateForum("test-forum", req, "owner_user");
+        ForumSummaryResponse result = forumService.updateForum("test-forum", req, owner.getPublicId().toString());
 
         assertThat(result.name()).isEqualTo("Updated Name");
         verify(forumRepo).save(forum);
@@ -189,7 +189,7 @@ class ForumServiceImplTest {
     @Test
     void createCategory_byAdmin_savesAndReturns() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.existsByNameIgnoreCaseAndForum("Backend", forum)).thenReturn(false);
         when(categoryRepo.save(any())).thenAnswer(inv -> {
             ForumCategory c = inv.getArgument(0);
@@ -198,7 +198,7 @@ class ForumServiceImplTest {
         });
 
         var req = new CreateForumCategoryRequest("Backend");
-        ForumCategoryResponse result = forumService.createCategory("test-forum", req, "owner_user");
+        ForumCategoryResponse result = forumService.createCategory("test-forum", req, owner.getPublicId().toString());
 
         assertThat(result.name()).isEqualTo("Backend");
         verify(categoryRepo).save(any(ForumCategory.class));
@@ -207,11 +207,11 @@ class ForumServiceImplTest {
     @Test
     void createCategory_duplicateName_throwsConflict() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.existsByNameIgnoreCaseAndForum("Tech", forum)).thenReturn(true);
 
         var req = new CreateForumCategoryRequest("Tech");
-        assertThatThrownBy(() -> forumService.createCategory("test-forum", req, "owner_user"))
+        assertThatThrownBy(() -> forumService.createCategory("test-forum", req, owner.getPublicId().toString()))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("Tech");
 
@@ -221,11 +221,11 @@ class ForumServiceImplTest {
     @Test
     void createCategory_byNonAdmin_throwsForbidden() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.findByForumAndUser(forum, otherUser)).thenReturn(Optional.empty());
 
         var req = new CreateForumCategoryRequest("Backend");
-        assertThatThrownBy(() -> forumService.createCategory("test-forum", req, "other_user"))
+        assertThatThrownBy(() -> forumService.createCategory("test-forum", req, otherUser.getPublicId().toString()))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(categoryRepo, never()).save(any());
@@ -234,11 +234,11 @@ class ForumServiceImplTest {
     @Test
     void deleteCategory_byAdmin_deletesCategory() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.findByPublicIdAndForum(category.getPublicId(), forum))
                 .thenReturn(Optional.of(category));
 
-        forumService.deleteCategory("test-forum", category.getPublicId(), "owner_user");
+        forumService.deleteCategory("test-forum", category.getPublicId(), owner.getPublicId().toString());
 
         verify(categoryRepo).delete(category);
     }
@@ -248,14 +248,14 @@ class ForumServiceImplTest {
     @Test
     void addMember_ownerAddsAdmin_savesWithAdminRole() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.findByForumAndUser(forum, otherUser)).thenReturn(Optional.empty());
         when(memberRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(profileRepo.findByUser(otherUser)).thenReturn(Optional.of(otherProfile));
 
         var req = new AddForumMemberRequest(otherUser.getPublicId(), ForumRole.ADMIN);
-        ForumMemberResponse result = forumService.addMember("test-forum", req, "owner_user");
+        ForumMemberResponse result = forumService.addMember("test-forum", req, owner.getPublicId().toString());
 
         assertThat(result.role()).isEqualTo(ForumRole.ADMIN);
         assertThat(result.username()).isEqualTo("other_user");
@@ -265,10 +265,10 @@ class ForumServiceImplTest {
     @Test
     void addMember_nonOwnerTriesToAddAdmin_throwsForbidden() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
 
         var req = new AddForumMemberRequest(UUID.randomUUID(), ForumRole.ADMIN);
-        assertThatThrownBy(() -> forumService.addMember("test-forum", req, "other_user"))
+        assertThatThrownBy(() -> forumService.addMember("test-forum", req, otherUser.getPublicId().toString()))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(memberRepo, never()).save(any());
@@ -290,7 +290,7 @@ class ForumServiceImplTest {
         newProfile.setUser(newUser);
 
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.findByForumAndUser(forum, otherUser)).thenReturn(Optional.of(adminMember));
         when(userRepo.findByPublicId(newUser.getPublicId())).thenReturn(Optional.of(newUser));
         when(memberRepo.findByForumAndUser(forum, newUser)).thenReturn(Optional.empty());
@@ -298,7 +298,7 @@ class ForumServiceImplTest {
         when(profileRepo.findByUser(newUser)).thenReturn(Optional.of(newProfile));
 
         var req = new AddForumMemberRequest(newUser.getPublicId(), ForumRole.MODERATOR);
-        ForumMemberResponse result = forumService.addMember("test-forum", req, "other_user");
+        ForumMemberResponse result = forumService.addMember("test-forum", req, otherUser.getPublicId().toString());
 
         assertThat(result.role()).isEqualTo(ForumRole.MODERATOR);
     }
@@ -311,11 +311,11 @@ class ForumServiceImplTest {
         membership.setRole(ForumRole.MODERATOR);
 
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.findByForumAndUser(forum, otherUser)).thenReturn(Optional.of(membership));
 
-        forumService.removeMember("test-forum", otherUser.getPublicId(), "owner_user");
+        forumService.removeMember("test-forum", otherUser.getPublicId(), owner.getPublicId().toString());
 
         verify(memberRepo).delete(membership);
     }
@@ -349,7 +349,7 @@ class ForumServiceImplTest {
                 .thenReturn(List.of(reply));
         when(profileRepo.findByUser(owner)).thenReturn(Optional.of(ownerProfile));
 
-        ThreadDetailResponse result = forumService.getThread(thread.getPublicId(), "owner_user");
+        ThreadDetailResponse result = forumService.getThread(thread.getPublicId(), owner.getPublicId().toString());
 
         assertThat(result.viewCount()).isEqualTo(6L);
         assertThat(result.replies()).hasSize(1);
@@ -361,14 +361,14 @@ class ForumServiceImplTest {
     void getThread_notFound_throwsResourceNotFoundException() {
         when(threadRepo.findByPublicId(any())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> forumService.getThread(UUID.randomUUID(), "owner_user"))
+        assertThatThrownBy(() -> forumService.getThread(UUID.randomUUID(), owner.getPublicId().toString()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void createThread_withNewTags_autoCreatesTagsAndSavesThread() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.findByPublicIdAndForum(category.getPublicId(), forum))
                 .thenReturn(Optional.of(category));
         when(tagRepo.findByNameIgnoreCase("spring-boot")).thenReturn(Optional.empty());
@@ -384,7 +384,7 @@ class ForumServiceImplTest {
                 "What are the best practices for Spring Boot?",
                 category.getPublicId(), List.of("spring-boot"));
 
-        ThreadDetailResponse result = forumService.createThread("test-forum", req, "owner_user");
+        ThreadDetailResponse result = forumService.createThread("test-forum", req, owner.getPublicId().toString());
 
         assertThat(result.title()).isEqualTo("Best practices");
         assertThat(result.forumSlug()).isEqualTo("test-forum");
@@ -399,7 +399,7 @@ class ForumServiceImplTest {
         existingTag.setName("spring-boot");
 
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.findByPublicIdAndForum(category.getPublicId(), forum))
                 .thenReturn(Optional.of(category));
         when(tagRepo.findByNameIgnoreCase("spring-boot")).thenReturn(Optional.of(existingTag));
@@ -409,7 +409,7 @@ class ForumServiceImplTest {
         var req = new CreateThreadRequest("Best practices",
                 "What are the best practices?", category.getPublicId(), List.of("spring-boot"));
 
-        forumService.createThread("test-forum", req, "owner_user");
+        forumService.createThread("test-forum", req, owner.getPublicId().toString());
 
         verify(tagRepo, never()).save(any());
     }
@@ -417,13 +417,13 @@ class ForumServiceImplTest {
     @Test
     void createThread_categoryNotInForum_throwsResourceNotFoundException() {
         when(forumRepo.findBySlug("test-forum")).thenReturn(Optional.of(forum));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(categoryRepo.findByPublicIdAndForum(any(), eq(forum))).thenReturn(Optional.empty());
 
         var req = new CreateThreadRequest("Title", "Body content here",
                 UUID.randomUUID(), List.of());
 
-        assertThatThrownBy(() -> forumService.createThread("test-forum", req, "owner_user"))
+        assertThatThrownBy(() -> forumService.createThread("test-forum", req, owner.getPublicId().toString()))
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(threadRepo, never()).save(any());
@@ -432,9 +432,9 @@ class ForumServiceImplTest {
     @Test
     void deleteThread_byAuthor_deletesThread() {
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
 
-        forumService.deleteThread(thread.getPublicId(), "owner_user");
+        forumService.deleteThread(thread.getPublicId(), owner.getPublicId().toString());
 
         verify(threadRepo).delete(thread);
     }
@@ -447,10 +447,10 @@ class ForumServiceImplTest {
         staffMember.setRole(ForumRole.MODERATOR);
 
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.existsByForumAndUser(forum, otherUser)).thenReturn(true);
 
-        forumService.deleteThread(thread.getPublicId(), "other_user");
+        forumService.deleteThread(thread.getPublicId(), otherUser.getPublicId().toString());
 
         verify(threadRepo).delete(thread);
     }
@@ -458,10 +458,10 @@ class ForumServiceImplTest {
     @Test
     void deleteThread_byStranger_throwsForbidden() {
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.existsByForumAndUser(forum, otherUser)).thenReturn(false);
 
-        assertThatThrownBy(() -> forumService.deleteThread(thread.getPublicId(), "other_user"))
+        assertThatThrownBy(() -> forumService.deleteThread(thread.getPublicId(), otherUser.getPublicId().toString()))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(threadRepo, never()).delete(any());
@@ -472,12 +472,12 @@ class ForumServiceImplTest {
     @Test
     void createReply_noParent_savesTopLevelReply() {
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(replyRepo.save(any())).thenReturn(reply);
         when(profileRepo.findByUser(owner)).thenReturn(Optional.of(ownerProfile));
 
         var req = new CreateReplyRequest("Great question!", null);
-        ReplyResponse result = forumService.createReply(thread.getPublicId(), req, "owner_user");
+        ReplyResponse result = forumService.createReply(thread.getPublicId(), req, owner.getPublicId().toString());
 
         assertThat(result.body()).isEqualTo("Great question!");
         assertThat(result.parentReplyPublicId()).isNull();
@@ -494,7 +494,7 @@ class ForumServiceImplTest {
         parent.setThread(thread);
 
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(replyRepo.findByPublicId(parent.getPublicId())).thenReturn(Optional.of(parent));
         when(replyRepo.save(any())).thenAnswer(inv -> {
             Reply r = inv.getArgument(0);
@@ -504,7 +504,7 @@ class ForumServiceImplTest {
         when(profileRepo.findByUser(owner)).thenReturn(Optional.of(ownerProfile));
 
         var req = new CreateReplyRequest("Nested reply body.", parent.getPublicId());
-        ReplyResponse result = forumService.createReply(thread.getPublicId(), req, "owner_user");
+        ReplyResponse result = forumService.createReply(thread.getPublicId(), req, owner.getPublicId().toString());
 
         assertThat(result.parentReplyPublicId()).isEqualTo(parent.getPublicId());
     }
@@ -512,21 +512,21 @@ class ForumServiceImplTest {
     @Test
     void createReply_parentNotFound_throwsResourceNotFoundException() {
         when(threadRepo.findByPublicId(thread.getPublicId())).thenReturn(Optional.of(thread));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
         when(replyRepo.findByPublicId(any())).thenReturn(Optional.empty());
 
         var req = new CreateReplyRequest("Some reply.", UUID.randomUUID());
 
-        assertThatThrownBy(() -> forumService.createReply(thread.getPublicId(), req, "owner_user"))
+        assertThatThrownBy(() -> forumService.createReply(thread.getPublicId(), req, owner.getPublicId().toString()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void deleteReply_byAuthor_deletesReply() {
         when(replyRepo.findByPublicId(reply.getPublicId())).thenReturn(Optional.of(reply));
-        when(profileRepo.findByUsername("owner_user")).thenReturn(Optional.of(ownerProfile));
+        when(userRepo.findByPublicId(owner.getPublicId())).thenReturn(Optional.of(owner));
 
-        forumService.deleteReply(reply.getPublicId(), "owner_user");
+        forumService.deleteReply(reply.getPublicId(), owner.getPublicId().toString());
 
         verify(replyRepo).delete(reply);
     }
@@ -534,10 +534,10 @@ class ForumServiceImplTest {
     @Test
     void deleteReply_byForumStaff_deletesReply() {
         when(replyRepo.findByPublicId(reply.getPublicId())).thenReturn(Optional.of(reply));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.existsByForumAndUser(forum, otherUser)).thenReturn(true);
 
-        forumService.deleteReply(reply.getPublicId(), "other_user");
+        forumService.deleteReply(reply.getPublicId(), otherUser.getPublicId().toString());
 
         verify(replyRepo).delete(reply);
     }
@@ -545,10 +545,10 @@ class ForumServiceImplTest {
     @Test
     void deleteReply_byStranger_throwsForbidden() {
         when(replyRepo.findByPublicId(reply.getPublicId())).thenReturn(Optional.of(reply));
-        when(profileRepo.findByUsername("other_user")).thenReturn(Optional.of(otherProfile));
+        when(userRepo.findByPublicId(otherUser.getPublicId())).thenReturn(Optional.of(otherUser));
         when(memberRepo.existsByForumAndUser(forum, otherUser)).thenReturn(false);
 
-        assertThatThrownBy(() -> forumService.deleteReply(reply.getPublicId(), "other_user"))
+        assertThatThrownBy(() -> forumService.deleteReply(reply.getPublicId(), otherUser.getPublicId().toString()))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(replyRepo, never()).delete(any());
@@ -558,7 +558,7 @@ class ForumServiceImplTest {
     void deleteReply_notFound_throwsResourceNotFoundException() {
         when(replyRepo.findByPublicId(any())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> forumService.deleteReply(UUID.randomUUID(), "owner_user"))
+        assertThatThrownBy(() -> forumService.deleteReply(UUID.randomUUID(), owner.getPublicId().toString()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }

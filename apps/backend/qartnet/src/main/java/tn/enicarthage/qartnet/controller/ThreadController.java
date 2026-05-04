@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import tn.enicarthage.qartnet.dto.request.CreateReplyRequest;
+import tn.enicarthage.qartnet.dto.request.UpdateThreadRequest;
 import tn.enicarthage.qartnet.dto.response.ReplyResponse;
 import tn.enicarthage.qartnet.dto.response.ThreadDetailResponse;
 import tn.enicarthage.qartnet.service.ForumService;
@@ -26,6 +27,14 @@ public class ThreadController {
             @PathVariable UUID publicId,
             @AuthenticationPrincipal UserDetails user) {
         return ApiResponse.success(forumService.getThread(publicId, user.getUsername()));
+    }
+
+    @PatchMapping("/{publicId}")
+    public ApiResponse<ThreadDetailResponse> updateThread(
+            @PathVariable UUID publicId,
+            @Valid @RequestBody UpdateThreadRequest req,
+            @AuthenticationPrincipal UserDetails user) {
+        return ApiResponse.success(forumService.updateThread(publicId, req, user.getUsername()));
     }
 
     @DeleteMapping("/{publicId}")

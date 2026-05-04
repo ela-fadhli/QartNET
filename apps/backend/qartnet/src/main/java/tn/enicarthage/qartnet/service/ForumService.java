@@ -33,4 +33,8 @@ public interface ForumService {
     // Replies
     ReplyResponse createReply(UUID threadPublicId, CreateReplyRequest req, String username);
     void deleteReply(UUID replyPublicId, String username);
+
+    // Edit
+    ThreadDetailResponse updateThread(UUID publicId, UpdateThreadRequest req, String username);
+    ReplyResponse updateReply(UUID publicId, UpdateReplyRequest req, String username);
 }

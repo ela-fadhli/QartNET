@@ -1,29 +1,30 @@
 import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { Select } from 'primeng/select';
-import { MultiSelect } from 'primeng/multiselect';
 import { ForumService } from '../../services/forum.service';
-import { CategoryResponse, TagResponse } from '../../models/forum.models';
+import { ForumCategoryResponse } from '../../models/forum.models';
 
 @Component({
   selector: 'app-create-thread',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, ButtonModule, InputTextModule, TextareaModule, MessageModule, Select, MultiSelect],
+  imports: [RouterLink, ReactiveFormsModule, ButtonModule, InputTextModule, TextareaModule, MessageModule, Select],
   templateUrl: './create-thread.html',
 })
 export class CreateThreadComponent implements OnInit {
   private forumService = inject(ForumService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
-  categories = signal<CategoryResponse[]>([]);
-  tags = signal<TagResponse[]>([]);
+  slug = '';
+  categories = signal<ForumCategoryResponse[]>([]);
+  tagNames = signal<string[]>([]);
   submitting = signal(false);
   error = signal<string | null>(null);
 
@@ -31,15 +32,10 @@ export class CreateThreadComponent implements OnInit {
     this.categories().map((c) => ({ label: c.name, value: c.publicId })),
   );
 
-  tagOptions = computed(() =>
-    this.tags().map((t) => ({ label: t.name, value: t.publicId })),
-  );
-
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
     body: ['', [Validators.required, Validators.minLength(10)]],
     categoryPublicId: [null as string | null, Validators.required],
-    tagPublicIds: [[] as string[]],
   });
 
   get title() { return this.form.get('title')!; }
@@ -47,14 +43,29 @@ export class CreateThreadComponent implements OnInit {
   get categoryPublicId() { return this.form.get('categoryPublicId')!; }
 
   ngOnInit(): void {
-    this.forumService.getCategories().subscribe((cats) => {
-      this.categories.set(cats);
-      this.cdr.markForCheck();
+    this.slug = this.route.snapshot.paramMap.get('slug')!;
+    this.forumService.getCategories(this.slug).subscribe({
+      next: (cats) => {
+        this.categories.set(cats);
+        this.cdr.markForCheck();
+      },
     });
-    this.forumService.getTags().subscribe((tags) => {
-      this.tags.set(tags);
-      this.cdr.markForCheck();
-    });
+  }
+
+  onTagKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      const input = event.target as HTMLInputElement;
+      const val = input.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+      if (val && !this.tagNames().includes(val) && this.tagNames().length < 10) {
+        this.tagNames.update((t) => [...t, val]);
+      }
+      input.value = '';
+    }
+  }
+
+  removeTag(tag: string): void {
+    this.tagNames.update((t) => t.filter((n) => n !== tag));
   }
 
   onSubmit(): void {
@@ -65,14 +76,14 @@ export class CreateThreadComponent implements OnInit {
     this.submitting.set(true);
     this.error.set(null);
 
-    const { title, body, categoryPublicId, tagPublicIds } = this.form.value;
+    const { title, body, categoryPublicId } = this.form.value;
 
     this.forumService
-      .createThread({
+      .createThread(this.slug, {
         title: title!,
         body: body!,
         categoryPublicId: categoryPublicId!,
-        tagPublicIds: tagPublicIds ?? [],
+        tagNames: this.tagNames(),
       })
       .subscribe({
         next: (thread) => {

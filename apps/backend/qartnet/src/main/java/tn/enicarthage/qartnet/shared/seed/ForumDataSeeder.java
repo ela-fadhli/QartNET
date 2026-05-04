@@ -122,28 +122,29 @@ public class ForumDataSeeder implements ApplicationRunner {
     // --- Helpers ---
 
     private User seedUser(String email, String username, String firstName, String lastName) {
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode("Test1234!"));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmailVerified(true);
-        user.setAccountStatus(AccountStatus.ACTIVE);
-        user.setRole(Role.STUDENT);
-        userRepository.save(user);
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User user = new User();
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode("Test1234!"));
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmailVerified(true);
+            user.setAccountStatus(AccountStatus.ACTIVE);
+            user.setRole(Role.STUDENT);
+            userRepository.save(user);
 
-        Profile profile = new Profile();
-        profile.setUser(user);
-        profile.setUsername(username);
-        profileRepository.save(profile);
+            Profile profile = new Profile();
+            profile.setUser(user);
+            profile.setUsername(username);
+            profileRepository.save(profile);
 
-        return user;
+            return user;
+        });
     }
 
     private Tag saveTag(String name) {
-        Tag t = new Tag();
-        t.setName(name);
-        return tagRepository.save(t);
+        return tagRepository.findByNameIgnoreCase(name)
+                .orElseGet(() -> { Tag t = new Tag(); t.setName(name); return tagRepository.save(t); });
     }
 
     private Forum saveForum(String name, String slug, String description, User owner) {
