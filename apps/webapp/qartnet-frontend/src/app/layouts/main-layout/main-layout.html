@@ -49,6 +49,14 @@
         My Profile
       </a>
 
+      @if (isAdmin) {
+        <a routerLink="/admin/dashboard" routerLinkActive="nav-active"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C9A84C]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+          <i class="pi pi-shield text-base w-4 text-center"></i>
+          Admin Panel
+        </a>
+      }
+
     </nav>
 
     <!-- Bottom user strip -->

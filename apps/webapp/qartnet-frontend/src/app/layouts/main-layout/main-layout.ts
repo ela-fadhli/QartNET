@@ -40,8 +40,13 @@ export class MainLayoutComponent implements OnInit {
   searchQuery = signal('');
   userMenu = viewChild<Menu>('userMenu');
 
+  isAdmin = this.authService.hasRole('ADMIN');
+
   userMenuItems: MenuItem[] = [
     { label: 'My Profile', icon: 'pi pi-user', routerLink: '/profile/me' },
+    ...(this.authService.hasRole('ADMIN')
+      ? [{ label: 'Admin Panel', icon: 'pi pi-shield', routerLink: '/admin/dashboard' }]
+      : []),
     { separator: true },
     { label: 'Sign out', icon: 'pi pi-sign-out', command: () => this.logout() },
   ];
