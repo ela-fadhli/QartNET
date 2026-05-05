@@ -20,7 +20,9 @@ import tn.enicarthage.qartnet.repository.MessageRepository;
 import tn.enicarthage.qartnet.repository.ProfileRepository;
 import tn.enicarthage.qartnet.repository.UserRepository;
 import tn.enicarthage.qartnet.service.MessagingService;
+import tn.enicarthage.qartnet.service.NotificationService;
 import tn.enicarthage.qartnet.shared.enums.ConversationType;
+import tn.enicarthage.qartnet.shared.enums.NotificationType;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
 import tn.enicarthage.qartnet.shared.exception.ForbiddenException;
 import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
@@ -41,6 +43,7 @@ public class MessagingServiceImpl implements MessagingService {
     private final UserRepository userRepo;
     private final ProfileRepository profileRepo;
     private final SimpMessagingTemplate broker;
+    private final NotificationService notificationService;
 
     private static final int DEFAULT_PAGE_SIZE = 50;
     private static final int MAX_PAGE_SIZE = 100;
@@ -112,11 +115,21 @@ public class MessagingServiceImpl implements MessagingService {
         MessageResponse payload = toMessageResponse(msg);
 
         broker.convertAndSend("/topic/conversation." + conv.getPublicId(), payload);
+        String snippet = req.body().length() > 120
+                ? req.body().substring(0, 120) + "…" : req.body();
         for (ConversationParticipant p : participantRepo.findByConversation(conv)) {
             broker.convertAndSendToUser(
                     p.getUser().getPublicId().toString(),
                     "/queue/messages",
                     payload);
+            if (!p.getUser().getId().equals(me.getId())) {
+                notificationService.notify(
+                        p.getUser(),
+                        NotificationType.MESSAGE,
+                        "New message from " + usernameOf(me),
+                        snippet,
+                        "/messaging/" + conv.getPublicId());
+            }
         }
 
         return payload;
@@ -201,7 +214,11 @@ public class MessagingServiceImpl implements MessagingService {
 
         ConversationParticipant myParticipant = participantRepo.findByConversationAndUser(conv, me)
                 .orElseThrow(() -> new ForbiddenException("Not a participant of this conversation"));
-        long unread = messageRepo.countUnreadFor(conv, me, myParticipant.getLastReadAt());
+        LocalDateTime lastReadAt = myParticipant.getLastReadAt();
+
+        long unread = (lastReadAt == null)
+                ? messageRepo.countByConversationAndSenderNot(conv, me)
+                : messageRepo.countByConversationAndSenderNotAndCreatedAtAfter(conv, me, lastReadAt);
 
         return new ConversationSummaryResponse(
                 conv.getPublicId(),

@@ -24,13 +24,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Optional<Message> findFirstByConversationOrderByCreatedAtDesc(Conversation conversation);
 
-    @Query("""
-           SELECT COUNT(m) FROM Message m
-           WHERE m.conversation = :conversation
-             AND m.sender <> :viewer
-             AND (:after IS NULL OR m.createdAt > :after)
-           """)
-    long countUnreadFor(@Param("conversation") Conversation conversation,
-                        @Param("viewer") User viewer,
-                        @Param("after") LocalDateTime after);
+    long countByConversationAndSenderNot(Conversation conversation, User viewer);
+
+    long countByConversationAndSenderNotAndCreatedAtAfter(
+            Conversation conversation,
+            User viewer,
+            LocalDateTime after
+    );
 }

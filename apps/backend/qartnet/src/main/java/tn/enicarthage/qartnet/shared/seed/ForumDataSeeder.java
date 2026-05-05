@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tn.enicarthage.qartnet.model.*;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
-import tn.enicarthage.qartnet.shared.enums.ConversationType;
 import tn.enicarthage.qartnet.shared.enums.ForumRole;
 import tn.enicarthage.qartnet.shared.enums.Role;
 
@@ -28,9 +27,6 @@ public class ForumDataSeeder implements ApplicationRunner {
     private final ProfileRepository profileRepository;
     private final ForumThreadRepository threadRepository;
     private final ReplyRepository replyRepository;
-    private final ConversationRepository conversationRepository;
-    private final ConversationParticipantRepository conversationParticipantRepository;
-    private final MessageRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -121,19 +117,6 @@ public class ForumDataSeeder implements ApplicationRunner {
                 List.of(linux));
         seedReply(yassine, t6, "Ubuntu for stability, Arch if you want pain + learning 😂", null);
         seedReply(mariem, t6, "Fedora — best balance between fresh packages and stability.", null);
-
-        // ── Direct conversations ─────────────────────────────────────
-
-        Conversation yassineMariem = seedDirectConversation(yassine, mariem);
-        seedMessage(yassineMariem, mariem, "Salut Yassine! Did you see the PFE deadline got pushed?");
-        seedMessage(yassineMariem, yassine, "Yes, I saw it on the platform. Honestly a relief.");
-        seedMessage(yassineMariem, mariem, "Same. Want to pair on the architecture diagram tomorrow?");
-        seedMessage(yassineMariem, yassine, "Sure, library at 10?");
-
-        Conversation yassineAhmed = seedDirectConversation(yassine, ahmed);
-        seedMessage(yassineAhmed, ahmed, "Did you finish the Spring Security setup?");
-        seedMessage(yassineAhmed, yassine, "Almost — JWT works, fighting CORS now.");
-        seedMessage(yassineAhmed, ahmed, "Classic. Send me the SecurityConfig when you can.");
     }
 
     // --- Helpers ---
@@ -215,32 +198,5 @@ public class ForumDataSeeder implements ApplicationRunner {
         r.setThread(thread);
         r.setParentReply(parent);
         return replyRepository.save(r);
-    }
-
-    private Conversation seedDirectConversation(User a, User b) {
-        Conversation conv = new Conversation();
-        conv.setType(ConversationType.DIRECT);
-        conv.setCreatedBy(a);
-        conversationRepository.save(conv);
-
-        ConversationParticipant pa = new ConversationParticipant();
-        pa.setConversation(conv);
-        pa.setUser(a);
-        conversationParticipantRepository.save(pa);
-
-        ConversationParticipant pb = new ConversationParticipant();
-        pb.setConversation(conv);
-        pb.setUser(b);
-        conversationParticipantRepository.save(pb);
-
-        return conv;
-    }
-
-    private Message seedMessage(Conversation conv, User sender, String body) {
-        Message m = new Message();
-        m.setConversation(conv);
-        m.setSender(sender);
-        m.setBody(body);
-        return messageRepository.save(m);
     }
 }

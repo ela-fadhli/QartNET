@@ -12,7 +12,9 @@ import tn.enicarthage.qartnet.dto.response.*;
 import tn.enicarthage.qartnet.model.*;
 import tn.enicarthage.qartnet.repository.*;
 import tn.enicarthage.qartnet.service.ForumService;
+import tn.enicarthage.qartnet.service.NotificationService;
 import tn.enicarthage.qartnet.shared.enums.ForumRole;
+import tn.enicarthage.qartnet.shared.enums.NotificationType;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
 import tn.enicarthage.qartnet.shared.exception.ForbiddenException;
 import tn.enicarthage.qartnet.shared.exception.ResourceNotFoundException;
@@ -32,6 +34,7 @@ public class ForumServiceImpl implements ForumService {
     private final UserRepository userRepo;
     private final ProfileRepository profileRepo;
     private final TagRepository tagRepo;
+    private final NotificationService notificationService;
 
     // ── Forum CRUD ──────────────────────────────────────────────
 
@@ -264,6 +267,19 @@ public class ForumServiceImpl implements ForumService {
         reply.setThread(thread);
         reply.setParentReply(parent);
         replyRepo.save(reply);
+
+        User threadAuthor = thread.getAuthor();
+        if (!threadAuthor.getId().equals(author.getId())) {
+            String snippet = req.body().length() > 120
+                    ? req.body().substring(0, 120) + "…" : req.body();
+            notificationService.notify(
+                    threadAuthor,
+                    NotificationType.FORUM_REPLY,
+                    usernameOf(author) + " replied to \"" + thread.getTitle() + "\"",
+                    snippet,
+                    "/forum/threads/" + thread.getPublicId());
+        }
+
         return toReplyResponse(reply);
     }
 
