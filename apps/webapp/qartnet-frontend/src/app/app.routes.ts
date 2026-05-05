@@ -22,9 +22,18 @@ export const routes: Routes = [
       },
       {
         path: 'messaging',
-        loadChildren: () =>
-          import('./features/messaging/messaging.routes').then((m) => m.MESSAGING_ROUTES),
+        loadChildren: () => import('./features/messaging/messaging.routes').then((m) => m.MESSAGING_ROUTES),
       },
+      {
+        path: 'projects',
+        loadChildren: () => import('./features/projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
+      },
+      {
+        path: 'repositories',
+        loadChildren: () => import('./features/repositories/repositories.routes').then((m) => m.REPOSITORIES_ROUTES),
+      },
+      { path: 'groups', loadComponent: () => import('./layouts/main-layout/main-layout').then(m => m.MainLayoutComponent) },
+      { path: 'notifications', loadComponent: () => import('./layouts/main-layout/main-layout').then(m => m.MainLayoutComponent) },
     ],
   },
   {

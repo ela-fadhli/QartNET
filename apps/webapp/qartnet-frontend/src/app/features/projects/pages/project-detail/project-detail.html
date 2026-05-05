@@ -1,0 +1,314 @@
+@if (project(); as p) {
+<div class="flex flex-col gap-8">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <p-button icon="pi pi-arrow-left" [routerLink]="['/projects']" 
+                  styleClass="p-button-rounded p-button-text !text-[#C9A84C] !p-0" />
+        <h1 class="font-['Cinzel',serif] text-2xl font-bold text-[#E8D5A3] m-0">{{ p.title }}</h1>
+      </div>
+      <p class="text-[#E8D5A3]/50 text-sm m-0 ml-10">Repository: <span class="text-[#C9A84C]">{{ p.repositoryName }}</span></p>
+    </div>
+  </div>
+
+  <!-- Overall Progress Overview -->
+  <div class="detail-card bg-gradient-to-r from-[#0D1221] to-[#0A0E1A] border-[#C9A84C]/20 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-[10px] text-[#E8D5A3]/40 uppercase tracking-[0.3em] font-bold">Overall Project Engineering Progress</span>
+      <span class="text-2xl font-['Cinzel',serif] text-[#C9A84C] font-bold">{{ p.progress }}%</span>
+    </div>
+    <p-progressBar [value]="p.progress" [showValue]="false" styleClass="!h-3 shadow-inner" />
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="flex items-center gap-3 border-b border-[#C9A84C]/10 pb-4 overflow-x-auto scrollbar-hide">
+    <button (click)="switchTab('phases')" 
+            [class]="activeTab() === 'phases' ? 'bg-[#C9A84C] text-[#0D1221] shadow-[0_0_15px_rgba(201,168,76,0.3)]' : 'bg-transparent text-[#E8D5A3]/40 hover:text-[#E8D5A3]'"
+            class="px-8 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap">
+      Phases & Tasks
+    </button>
+    <button (click)="switchTab('team')" 
+            [class]="activeTab() === 'team' ? 'bg-[#C9A84C] text-[#0D1221] shadow-[0_0_15px_rgba(201,168,76,0.3)]' : 'bg-transparent text-[#E8D5A3]/40 hover:text-[#E8D5A3]'"
+            class="px-8 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap">
+      Engineering Team
+    </button>
+    <button (click)="switchTab('chronology')" 
+            [class]="activeTab() === 'chronology' ? 'bg-[#C9A84C] text-[#0D1221] shadow-[0_0_15px_rgba(201,168,76,0.3)]' : 'bg-transparent text-[#E8D5A3]/40 hover:text-[#E8D5A3]'"
+            class="px-8 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap">
+      Chronology
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content Area -->
+    <div class="lg:col-span-2">
+      @if (activeTab() === 'phases') {
+        <div class="flex flex-col gap-6">
+          @if (isCreator()) {
+            <div class="flex justify-end mb-2">
+              <p-button label="Add Engineering Phase" icon="pi pi-plus" (onClick)="showAddPhaseDialog.set(true)" 
+                        styleClass="p-button-text !text-[#C9A84C] !text-xs !bg-[#C9A84C]/5 px-6 py-2" />
+            </div>
+          }
+          @for (phase of p.phases; track phase.id; let idx = $index) {
+            <div class="detail-card !p-0 overflow-hidden border-[#C9A84C]/10 hover:border-[#C9A84C]/30 transition-all duration-500">
+              <div class="bg-[#C9A84C]/5 px-6 py-5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="w-8 h-8 rounded-full bg-[#C9A84C]/10 text-[#C9A84C] flex items-center justify-center font-bold text-sm border border-[#C9A84C]/20">{{ idx + 1 }}</span>
+                  <div class="flex flex-col">
+                    <h4 class="text-[#E8D5A3] font-bold text-sm m-0">{{ phase.title }}</h4>
+                    <div class="flex gap-2 mt-1">
+                      @if (phase.status === 'COMPLETED') {
+                        <p-tag value="Completed" severity="success" styleClass="!text-[9px] !bg-[#4CAF50]/10 !text-[#4CAF50] !border-[#4CAF50]/20" icon="pi pi-check" />
+                      } @else if (phase.status === 'IN_PROGRESS') {
+                        <p-tag value="In Progress" severity="warn" styleClass="!text-[9px] !bg-[#C9A84C]/10 !text-[#C9A84C] !border-[#C9A84C]/20" icon="pi pi-spin pi-spinner" />
+                      } @else {
+                        <p-tag value="Pending" styleClass="!text-[9px] !bg-[#E8D5A3]/5 !text-[#E8D5A3]/40 !border-[#E8D5A3]/10" icon="pi pi-clock" />
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                  <span class="text-[10px] text-[#C9A84C] font-mono font-bold">{{ getPhaseProgress(phase) }}%</span>
+                  <div class="w-24 h-1 bg-[#E8D5A3]/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#C9A84C] shadow-[0_0_10px_#C9A84C]" [style.width.%]="getPhaseProgress(phase)"></div>
+                  </div>
+                  @if (isCreator()) {
+                    <p-button icon="pi pi-plus" (onClick)="openAddTaskDialog(phase.id!)" 
+                              pTooltip="Add Task" tooltipPosition="left"
+                              styleClass="p-button-rounded p-button-text !p-0 !w-6 !h-6 !text-[#C9A84C]" />
+                  }
+                </div>
+              </div>
+              <div class="flex flex-col bg-[#0A0E1A]/20">
+                @for (task of phase.tasks; track task.id) {
+                  <div class="flex items-center justify-between px-8 py-5 border-b border-[#C9A84C]/5 last:border-0 hover:bg-[#C9A84C]/5 transition-all group">
+                    <div class="flex items-center gap-4">
+                      <div [class.cursor-pointer]="isCreator()" 
+                           [class.opacity-50]="!isCreator()"
+                           class="group-hover:scale-110 transition-transform duration-300 flex items-center justify-center" 
+                           (click)="isCreator() ? toggleTaskStatus(task.id, task.status) : null">
+                        @if (task.status === 'completed') {
+                          <i class="pi pi-check-circle text-[#4CAF50] text-xl"></i>
+                        } @else {
+                          <div class="w-5 h-5 rounded-full border-2 border-[#C9A84C] hover:bg-[#C9A84C]/20 transition-colors shadow-[0_0_10px_rgba(201,168,76,0.2)] flex items-center justify-center">
+                            @if (!isCreator()) {
+                              <i class="pi pi-lock text-[8px] text-[#C9A84C]/40"></i>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <span [class]="task.status === 'completed' ? 'text-[#E8D5A3]/20 line-through' : 'text-[#E8D5A3]/80'" class="text-[13px] font-medium">{{ task.title }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#C9A84C]/5 border border-[#C9A84C]/10">
+                        <span class="text-[9px] text-[#C9A84C] font-bold uppercase tracking-widest">{{ task.assigneeInitials }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+                
+                @if (isCreator()) {
+                  <div class="p-4 flex justify-center bg-[#C9A84C]/5">
+                    <p-button label="Add New Task" icon="pi pi-plus" 
+                              (onClick)="openAddTaskDialog(phase.id!)"
+                              styleClass="p-button-text !text-[#C9A84C] !text-[10px] uppercase font-bold tracking-widest" />
+                  </div>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="detail-card border-dashed border-[#C9A84C]/20 p-12 text-center flex flex-col items-center gap-4">
+              <i class="pi pi-sitemap text-3xl text-[#C9A84C]/20"></i>
+              <p class="text-[#E8D5A3]/40 text-sm">No engineering phases defined yet. The project lead can add them during initialization or edit the project.</p>
+              <p-button label="Add First Phase" icon="pi pi-plus" styleClass="p-button-text !text-[#C9A84C] !text-xs" />
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab() === 'team') {
+        <div class="detail-card">
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="text-[#E8D5A3] font-semibold flex items-center gap-3 m-0"><i class="pi pi-users text-[#C9A84C]"></i> Engineering Team</h3>
+            @if (isCreator()) {
+              <p-button label="Add Member" icon="pi pi-plus" (onClick)="showAddMemberDialog.set(true)" 
+                        styleClass="p-button-text !text-[#C9A84C] !text-xs !bg-[#C9A84C]/5 px-4" />
+            }
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            @for (member of p.team; track member.userId) {
+              <div class="flex items-center gap-4 p-5 rounded-2xl bg-[#0A0E1A]/40 border border-[#C9A84C]/5 hover:border-[#C9A84C]/20 transition-all duration-300">
+                <p-avatar [image]="member.avatarUrl" shape="circle" size="large" styleClass="border-2 border-[#C9A84C]/20 shadow-lg" />
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-[#E8D5A3] tracking-wide">{{ member.name }}</span>
+                  <span class="text-[10px] text-[#C9A84C]/60 uppercase tracking-[0.2em] font-bold">{{ member.role }}</span>
+                </div>
+              </div>
+            } @empty {
+              <div class="col-span-full py-10 text-center text-[#E8D5A3]/30 italic text-xs">
+                No team members assigned to this operation yet.
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activeTab() === 'chronology') {
+        <div class="detail-card bg-[#0D1221]">
+          <h3 class="text-[#E8D5A3] font-semibold mb-12 flex items-center gap-3">
+            <i class="pi pi-history text-[#C9A84C]"></i> Engineering Lifecycle
+          </h3>
+          
+          <div class="flex flex-col">
+            @for (phase of sortedPhases(); track phase.id; let idx = $index; let last = $last) {
+              <div class="flex items-start gap-6 relative pb-12">
+                <!-- Connector Line -->
+                @if (!last) {
+                  <div class="absolute left-[11px] top-[24px] bottom-0 w-[2px] bg-[#C9A84C]/10"></div>
+                }
+                
+                <!-- Status Dot -->
+                <div class="relative z-10 mt-1">
+                  @if (phase.status === 'COMPLETED') {
+                    <div class="w-6 h-6 rounded-full bg-[#4CAF50] shadow-[0_0_15px_#4CAF50] flex items-center justify-center">
+                      <i class="pi pi-check text-[10px] text-white"></i>
+                    </div>
+                  } @else if (phase.status === 'IN_PROGRESS') {
+                    <div class="w-6 h-6 rounded-full bg-[#3B82F6] shadow-[0_0_15px_#3B82F6] flex items-center justify-center">
+                      <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                    </div>
+                  } @else {
+                    <div class="w-6 h-6 rounded-full border-2 border-[#E8D5A3]/20 bg-[#0D1221]"></div>
+                  }
+                </div>
+
+                <!-- Phase Info -->
+                <div class="flex-grow flex items-center justify-between">
+                  <div class="flex flex-col">
+                    <span class="text-[#E8D5A3] font-bold text-sm tracking-wide">{{ phase.title }}</span>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="text-[10px] text-[#E8D5A3]/40 font-mono">
+                        {{ phase.tasks?.length || 0 }} tasks
+                      </span>
+                      <span class="text-[#C9A84C] text-[10px] font-bold px-2 py-0.5 rounded bg-[#C9A84C]/5 border border-[#C9A84C]/10">
+                        {{ getPhaseProgress(phase) }}% complete
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Status Tag -->
+                  <div class="flex flex-col items-end">
+                    @if (phase.status === 'COMPLETED') {
+                      <p-tag value="Completed" severity="success" styleClass="!text-[9px] !bg-[#4CAF50]/10 !text-[#4CAF50] !border-[#4CAF50]/20" />
+                    } @else if (phase.status === 'IN_PROGRESS') {
+                      <p-tag value="In Progress" severity="warn" styleClass="!text-[9px] !bg-[#C9A84C]/10 !text-[#C9A84C] !border-[#C9A84C]/20" />
+                    } @else {
+                      <p-tag value="Pending" styleClass="!text-[9px] !bg-[#E8D5A3]/5 !text-[#E8D5A3]/40 !border-[#E8D5A3]/10" />
+                    }
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <div class="py-20 text-center flex flex-col items-center gap-4">
+                <i class="pi pi-folder-open text-4xl text-[#C9A84C]/20"></i>
+                <span class="text-[#E8D5A3]/30 italic text-xs">No engineering phases defined yet.</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Sidebar -->
+    <div class="flex flex-col gap-8">
+      @if (recentCommits().length > 0) {
+        <div class="detail-card border-[#C9A84C]/20 bg-gradient-to-b from-[#0D1221] to-[#0A0E1A] shadow-2xl">
+          <h3 class="text-[#E8D5A3] font-bold mb-8 text-[10px] uppercase tracking-[0.3em] flex items-center gap-3"><i class="pi pi-github text-[#C9A84C] text-lg"></i> Engineering Pulse</h3>
+          <div class="flex flex-col gap-6">
+            @for (commit of recentCommits(); track commit.hash) {
+              <div class="flex flex-col gap-2 border-l-2 border-[#C9A84C]/20 pl-5 py-1 hover:border-[#C9A84C] transition-all duration-300">
+                <span class="text-[12px] text-[#E8D5A3]/90 leading-relaxed italic">"{{ commit.message }}"</span>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] text-[#E8D5A3]/30 font-bold uppercase">{{ commit.author }}</span>
+                  <span class="text-[9px] text-[#C9A84C]/40 font-mono bg-[#C9A84C]/5 px-2 py-0.5 rounded">{{ commit.hash }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <div class="detail-card border-dashed border-[#C9A84C]/10">
+        <div class="flex flex-col gap-8">
+          <div class="flex flex-col gap-2">
+            <span class="text-[9px] text-[#C9A84C] uppercase font-black tracking-[0.4em]">Submission Deadline</span>
+            <span class="text-xl font-['Cinzel',serif] text-[#E8D5A3]">{{ p.deadline }}</span>
+          </div>
+          <div class="flex flex-col gap-2 pt-6 border-t border-[#C9A84C]/5">
+            <span class="text-[9px] text-[#C9A84C] uppercase font-black tracking-[0.4em]">Project Lifecycle</span>
+            <p-tag [value]="p.progress === 100 ? 'Finalized' : 'In Development'" styleClass="!bg-[#C9A84C]/10 !text-[#C9A84C] !border !border-[#C9A84C]/20 !text-[9px] !w-fit px-4 py-1.5 font-bold uppercase" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+}
+
+<p-dialog [(visible)]="showAddMemberDialog" [modal]="true" [header]="'Enlist New Engineer'" 
+          [style]="{width: '400px'}" styleClass="custom-dialog">
+  <div class="flex flex-col gap-6 py-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Full Name</label>
+      <input pInputText [(ngModel)]="newMember.name" class="auth-input" placeholder="ex: Alan Turing" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Role</label>
+      <input pInputText [(ngModel)]="newMember.role" class="auth-input" placeholder="ex: Senior Architect" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Specialty</label>
+      <input pInputText [(ngModel)]="newMember.specialty" class="auth-input" placeholder="ex: Cybernetics" />
+    </div>
+    
+    <div class="flex gap-3 justify-end pt-6 border-t border-[#C9A84C]/10">
+      <p-button label="Cancel" (onClick)="showAddMemberDialog.set(false)" styleClass="p-button-text !text-[#E8D5A3]/50" />
+      <p-button label="Add to Team" (onClick)="addMember()" styleClass="auth-btn !w-auto px-8" />
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showAddPhaseDialog" [modal]="true" [header]="'Define New Engineering Phase'" 
+          [style]="{width: '400px'}" styleClass="custom-dialog">
+  <div class="flex flex-col gap-6 py-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Phase Title</label>
+      <input pInputText [(ngModel)]="newPhase.title" class="auth-input" placeholder="ex: Backend Integration" />
+    </div>
+    <div class="flex gap-3 justify-end pt-6 border-t border-[#C9A84C]/10">
+      <p-button label="Cancel" (onClick)="showAddPhaseDialog.set(false)" styleClass="p-button-text !text-[#E8D5A3]/50" />
+      <p-button label="Add Phase" (onClick)="addPhase()" styleClass="auth-btn !w-auto px-8" />
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showAddTaskDialog" [modal]="true" [header]="'Dispatch New Task'" 
+          [style]="{width: '400px'}" styleClass="custom-dialog">
+  <div class="flex flex-col gap-6 py-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Task Title</label>
+      <input pInputText [(ngModel)]="newTask.title" class="auth-input" placeholder="ex: API Documentation" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-[#E8D5A3]/60 uppercase tracking-widest">Assignee Initials</label>
+      <input pInputText [(ngModel)]="newTask.assigneeInitials" class="auth-input" placeholder="ex: JD" />
+    </div>
+    <div class="flex gap-3 justify-end pt-6 border-t border-[#C9A84C]/10">
+      <p-button label="Cancel" (onClick)="showAddTaskDialog.set(false)" styleClass="p-button-text !text-[#E8D5A3]/50" />
+      <p-button label="Dispatch Task" (onClick)="addTask()" styleClass="auth-btn !w-auto px-8" />
+    </div>
+  </div>
+</p-dialog>

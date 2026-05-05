@@ -2,8 +2,6 @@ package tn.enicarthage.qartnet.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import tn.enicarthage.qartnet.model.Conversation;
 import tn.enicarthage.qartnet.model.Message;
 import tn.enicarthage.qartnet.model.User;

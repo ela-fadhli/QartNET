@@ -1,7 +1,6 @@
 package tn.enicarthage.qartnet.service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import tn.enicarthage.qartnet.dto.request.*;
 import tn.enicarthage.qartnet.dto.response.*;
 import java.util.List;

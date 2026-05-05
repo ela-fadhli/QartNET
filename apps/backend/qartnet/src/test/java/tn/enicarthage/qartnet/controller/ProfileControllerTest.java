@@ -1,11 +1,10 @@
 package tn.enicarthage.qartnet.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,18 +33,13 @@ class ProfileControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper;
+        @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean private ProfileService profileService;
-    @MockitoBean private JwtService jwtService;
-    @MockitoBean private UserDetailsService userDetailsService;
+    @MockBean private ProfileService profileService;
+    @MockBean private JwtService jwtService;
+    @MockBean private UserDetailsService userDetailsService;
 
     private static final String USER_UUID = "550e8400-e29b-41d4-a716-446655440000";
-
-    @BeforeEach
-    void setUp() {
-        objectMapper = new ObjectMapper();
-    }
 
     private ProfileResponse sampleProfile() {
         return new ProfileResponse(

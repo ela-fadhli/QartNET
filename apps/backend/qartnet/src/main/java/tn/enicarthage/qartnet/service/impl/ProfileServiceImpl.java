@@ -21,6 +21,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final tn.enicarthage.qartnet.repository.RepositoryJpaRepository repositoryJpaRepository;
+    private final tn.enicarthage.qartnet.repository.RepositoryAccessJpaRepository repositoryAccessJpaRepository;
+    private final tn.enicarthage.qartnet.service.GitStorageService gitStorageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,6 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileResponse updateMyProfile(UUID publicId, UpdateProfileRequest request) {
         User user = findUser(publicId);
         Profile profile = findProfile(user);
+        String oldSlug = (user.getFirstName() + " " + user.getLastName()).toLowerCase().replace(" ", "-");
 
         if (request.username() != null && !request.username().equals(profile.getUsername())) {
             if (profileRepository.existsByUsername(request.username())) {
@@ -49,10 +53,43 @@ public class ProfileServiceImpl implements ProfileService {
         if (request.dateOfBirth() != null)        user.setDateOfBirth(request.dateOfBirth());
         if (request.phoneNumber() != null)        user.setPhoneNumber(request.phoneNumber());
 
+        String newSlug = (user.getFirstName() + " " + user.getLastName()).toLowerCase().replace(" ", "-");
+        String newDisplayName = (user.getFirstName() + " " + user.getLastName());
+
+        if (!oldSlug.equals(newSlug)) {
+            cascadeRepositoryOwnerChange(oldSlug, newSlug, newDisplayName);
+        }
+
         profileRepository.save(profile);
         userRepository.save(user);
 
         return toResponse(user, profile);
+    }
+
+    private void cascadeRepositoryOwnerChange(String oldSlug, String newSlug, String newDisplayName) {
+        var repos = repositoryJpaRepository.findAll(); // Optimization: could be findByOwner
+        for (var repo : repos) {
+            if (repo.getOwner().equalsIgnoreCase(oldSlug)) {
+                repo.setOwner(newSlug);
+                repo.setOwnerDisplayName(newDisplayName);
+                
+                // Update the clone URL as well
+                String newCloneUrl = "http://localhost:8085/git/" + newSlug + "/" + repo.getName() + ".git";
+                repo.setCloneUrl(newCloneUrl);
+                
+                repositoryJpaRepository.save(repo);
+
+                var accessList = repositoryAccessJpaRepository.findByRepositoryId(repo.getId());
+                for (var access : accessList) {
+                    if (access.getActorKey().equalsIgnoreCase(oldSlug)) {
+                        access.setActorKey(newSlug);
+                        repositoryAccessJpaRepository.save(access);
+                    }
+                }
+            }
+        }
+        // Physical rename
+        gitStorageService.renameOwnerDirectory(oldSlug, newSlug);
     }
 
     @Override
