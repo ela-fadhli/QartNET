@@ -28,14 +28,38 @@ export class WebSocketService {
     return this.client?.connected ?? false;
   }
 
+  /**
+   * Subscribes to a STOMP destination. If the client is still connecting,
+   * the subscription is registered through the client's onConnect hook so
+   * callers don't need to manually wait for activation.
+   */
   subscribe(destination: string): Observable<IMessage> {
     return new Observable(observer => {
-      if (!this.client?.connected) {
-        observer.error(new Error('WebSocket not connected'));
+      let sub: StompSubscription | null = null;
+      let cancelled = false;
+
+      const doSubscribe = () => {
+        if (cancelled || !this.client) return;
+        sub = this.client.subscribe(destination, msg => observer.next(msg));
+      };
+
+      if (this.client?.connected) {
+        doSubscribe();
+      } else if (this.client) {
+        const previous = this.client.onConnect;
+        this.client.onConnect = (frame) => {
+          previous?.(frame);
+          doSubscribe();
+        };
+      } else {
+        observer.error(new Error('WebSocket client not initialized; call connect() first'));
         return;
       }
-      const sub: StompSubscription = this.client.subscribe(destination, msg => observer.next(msg));
-      return () => sub.unsubscribe();
+
+      return () => {
+        cancelled = true;
+        sub?.unsubscribe();
+      };
     });
   }
 

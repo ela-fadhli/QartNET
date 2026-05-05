@@ -1,0 +1,120 @@
+<div class="flex h-full bg-[#0A0E1A] text-[#E8D5A3] font-['DM_Sans',sans-serif] -m-6">
+
+  <!-- Conversation list -->
+  <aside class="w-80 border-r border-[#C9A84C]/10 bg-[#0D1221] flex flex-col shrink-0">
+    <div class="h-14 px-5 flex items-center border-b border-[#C9A84C]/10">
+      <h1 class="font-['Cinzel',serif] text-[#E8D5A3] tracking-wider text-sm">Messages</h1>
+    </div>
+
+    @if (loadingConversations()) {
+      <div class="p-4 space-y-3">
+        @for (_ of [1, 2, 3]; track $index) {
+          <p-skeleton height="3.5rem" />
+        }
+      </div>
+    } @else if (conversations().length === 0) {
+      <div class="flex flex-col items-center justify-center flex-1 px-6 text-center">
+        <i class="pi pi-inbox text-[#E8D5A3]/30 text-4xl mb-3"></i>
+        <p class="text-[#E8D5A3]/60 text-sm">No conversations yet.</p>
+        <p class="text-[#E8D5A3]/40 text-xs mt-1">
+          Visit a user's profile to start one.
+        </p>
+      </div>
+    } @else {
+      <div class="flex-1 overflow-y-auto">
+        @for (conv of conversations(); track conv.publicId) {
+          <button
+            type="button"
+            (click)="selectConversation(conv.publicId)"
+            [class]="'w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#C9A84C]/5 transition-colors border-b border-[#C9A84C]/5 ' + (conv.publicId === activeConversationId() ? 'bg-[#C9A84C]/10' : '')">
+            <p-avatar
+              [label]="otherParticipantName(conv).charAt(0).toUpperCase()"
+              shape="circle"
+              styleClass="!bg-[#C9A84C]/20 !text-[#C9A84C] !text-xs !w-9 !h-9" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <p class="text-sm font-medium truncate">{{ otherParticipantName(conv) }}</p>
+                @if (conv.unreadCount > 0) {
+                  <span class="text-[10px] bg-[#C9A84C] text-[#0A0E1A] font-semibold rounded-full px-1.5 py-0.5">
+                    {{ conv.unreadCount }}
+                  </span>
+                }
+              </div>
+              <p class="text-xs text-[#E8D5A3]/50 truncate">
+                {{ conv.lastMessage?.body || 'No messages yet' }}
+              </p>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </aside>
+
+  <!-- Active conversation -->
+  <section class="flex-1 flex flex-col">
+    @if (!activeConversationId()) {
+      <div class="flex-1 flex flex-col items-center justify-center text-center px-6">
+        <i class="pi pi-comments text-[#E8D5A3]/30 text-5xl mb-3"></i>
+        <p class="text-[#E8D5A3]/60">Select a conversation to start messaging.</p>
+      </div>
+    } @else if (activeConversation(); as conv) {
+      <header class="h-14 px-6 flex items-center gap-3 border-b border-[#C9A84C]/10 bg-[#0D1221] shrink-0">
+        <p-avatar
+          [label]="otherParticipantName(conv).charAt(0).toUpperCase()"
+          shape="circle"
+          styleClass="!bg-[#C9A84C]/20 !text-[#C9A84C] !text-xs !w-8 !h-8" />
+        <div class="flex flex-col">
+          <p class="text-sm font-medium leading-none">{{ otherParticipantName(conv) }}</p>
+          <p class="text-[10px] text-[#E8D5A3]/40 mt-0.5">Direct conversation</p>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+        @if (loadingMessages()) {
+          @for (_ of [1, 2, 3, 4]; track $index) {
+            <p-skeleton height="2.5rem" width="60%" />
+          }
+        } @else if (messages().length === 0) {
+          <div class="flex flex-col items-center justify-center h-full text-center">
+            <p class="text-[#E8D5A3]/40 text-sm">No messages yet — say hello.</p>
+          </div>
+        } @else {
+          @for (msg of messages(); track msg.publicId) {
+            <div class="flex" [class.justify-end]="isMine(msg)">
+              <div [class]="isMine(msg)
+                ? 'max-w-[70%] rounded-2xl px-4 py-2 text-sm leading-relaxed bg-[#C9A84C] text-[#0A0E1A]'
+                : 'max-w-[70%] rounded-2xl px-4 py-2 text-sm leading-relaxed bg-[#0D1221] border border-[#C9A84C]/10'">
+                @if (!isMine(msg)) {
+                  <p class="text-[10px] font-semibold text-[#C9A84C] mb-0.5">
+                    {{ msg.senderUsername }}
+                  </p>
+                }
+                <p class="whitespace-pre-wrap break-words">{{ msg.body }}</p>
+              </div>
+            </div>
+          }
+        }
+        <div #messagesEnd></div>
+      </div>
+
+      <div class="border-t border-[#C9A84C]/10 bg-[#0D1221] p-3 shrink-0">
+        <div class="flex gap-2 items-end">
+          <textarea
+            pInputText
+            rows="1"
+            placeholder="Type a message..."
+            [formControl]="composer"
+            (keydown)="onComposerKey($event)"
+            class="flex-1 resize-none bg-[#0A0E1A] border border-[#C9A84C]/10 rounded-lg text-sm text-[#E8D5A3] placeholder-[#E8D5A3]/30 px-3 py-2 focus:border-[#C9A84C]/40 focus:outline-none">
+          </textarea>
+          <p-button
+            icon="pi pi-send"
+            [disabled]="sending() || !composer.value.trim()"
+            (onClick)="send()"
+            styleClass="!bg-[#C9A84C] !border-[#C9A84C] !text-[#0A0E1A] hover:!bg-[#B89540]" />
+        </div>
+      </div>
+    }
+  </section>
+
+</div>

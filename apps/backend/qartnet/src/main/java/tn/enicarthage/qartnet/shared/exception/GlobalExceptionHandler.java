@@ -77,6 +77,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Failed to send email. Please try again later."));
     }
 
+    // 503 — upstream LLM provider failure
+    @ExceptionHandler(LlmUnavailableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLlmUnavailable(LlmUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.error("AI assistant unavailable: " + ex.getMessage()));
+    }
+
     // 500 — catch-all, never expose internals
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
