@@ -19,7 +19,7 @@
         { label: 'Total users',   value: s.totalUsers,   icon: 'pi-users',       color: '#C9A84C' },
         { label: 'Active',        value: s.activeUsers,  icon: 'pi-check-circle', color: '#4ade80' },
         { label: 'Pending',       value: s.pendingUsers, icon: 'pi-clock',        color: '#facc15' },
-        { label: 'Suspended',     value: s.suspendedUsers, icon: 'pi-ban',        color: '#f87171' }
+        { label: 'Disabled / Suspended', value: s.suspendedUsers + s.disabledUsers, icon: 'pi-ban', color: '#f87171' }
       ]; track card.label) {
         <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
           <div class="flex items-start justify-between mb-3">
@@ -35,11 +35,11 @@
     <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
         <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">New this week</p>
-        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.newRegistrationsLast7Days }}</p>
+        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.registrationsLast7Days | number }}</p>
       </div>
       <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
         <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">New this month</p>
-        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.newRegistrationsLast30Days }}</p>
+        <p class="font-['Cinzel',serif] text-2xl font-semibold text-[#C9A84C] m-0">+{{ s.registrationsLast30Days | number }}</p>
       </div>
       <div class="rounded-xl border border-[#C9A84C]/10 bg-[#0D1221] p-5">
         <p class="font-['DM_Sans',sans-serif] text-xs text-[#E8D5A3]/40 uppercase tracking-widest m-0 mb-3">Pending reports</p>

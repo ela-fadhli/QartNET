@@ -61,9 +61,9 @@ export class AdminService {
       .pipe(map((r) => r.data!));
   }
 
-  resolveReport(id: number): Observable<AdminReport> {
+  resolveReport(id: number, status: 'PENDING' | 'RESOLVED' | 'DISMISSED' = 'RESOLVED'): Observable<AdminReport> {
     return this.http
-      .put<ApiResponse<AdminReport>>(`${this.base}/reports/${id}/resolve`, {})
+      .put<ApiResponse<AdminReport>>(`${this.base}/reports/${id}/resolve`, { status })
       .pipe(map((r) => r.data!));
   }
 }

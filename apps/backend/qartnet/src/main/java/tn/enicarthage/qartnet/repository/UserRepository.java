@@ -29,20 +29,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     long countByCreatedAtAfter(LocalDateTime date);
 
-    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL")
+    @Query("SELECT u FROM User u")
     Page<User> findAllActive(Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND u.accountStatus = :status")
+    @Query("SELECT u FROM User u WHERE u.accountStatus = :status")
     Page<User> findAllActiveByStatus(@Param("status") AccountStatus status, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND (" +
+    @Query("SELECT u FROM User u WHERE (" +
            "LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<User> findAllActiveBySearch(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND (" +
+    @Query("SELECT u FROM User u WHERE (" +
            "LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

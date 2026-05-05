@@ -22,6 +22,8 @@
             <th class="admin-th">Reason</th>
             <th class="admin-th">Status</th>
             <th class="admin-th">Date</th>
+            <th class="admin-th">Resolved by</th>
+            <th class="admin-th">Resolved at</th>
             <th class="admin-th text-right">Actions</th>
           </tr>
         </thead>
@@ -43,17 +45,32 @@
               <td class="admin-td">
                 <span class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/50">{{ r.createdAt | date:'dd MMM yyyy' }}</span>
               </td>
+              <td class="admin-td">
+                <span class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/65">{{ r.resolvedByUsername || '-' }}</span>
+              </td>
+              <td class="admin-td">
+                <span class="font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/50">
+                  {{ r.resolvedAt ? (r.resolvedAt | date:'dd MMM yyyy HH:mm') : '-' }}
+                </span>
+              </td>
               <td class="admin-td text-right">
                 @if (r.status === 'PENDING') {
-                  <p-button icon="pi pi-check" label="Resolve" size="small" severity="success" [text]="true"
-                            (onClick)="resolve(r)" />
+                  <div class="flex justify-end gap-2">
+                    <p-button icon="pi pi-check" label="Resolve" size="small" severity="success" [text]="true"
+                              (onClick)="resolve(r)" />
+                    <p-button icon="pi pi-times" label="Reject" size="small" severity="secondary" [text]="true"
+                              (onClick)="reject(r)" />
+                  </div>
+                } @else {
+                  <p-button icon="pi pi-undo" label="Cancel" size="small" severity="warn" [text]="true"
+                            (onClick)="cancelResolution(r)" />
                 }
               </td>
             </tr>
           }
           @empty {
             <tr>
-              <td colspan="6" class="admin-td text-center font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/30 py-12">
+              <td colspan="8" class="admin-td text-center font-['DM_Sans',sans-serif] text-sm text-[#E8D5A3]/30 py-12">
                 No reports found
               </td>
             </tr>

@@ -46,12 +46,34 @@ export class AdminReportsComponent implements OnInit {
   prevPage(): void { this.page.update((p) => Math.max(0, p - 1)); this.load(); }
 
   resolve(report: AdminReport): void {
-    this.adminService.resolveReport(report.id).subscribe({
+    this.updateReportStatus(report, 'RESOLVED', 'Report resolved', 'Failed to resolve report');
+  }
+
+  reject(report: AdminReport): void {
+    this.updateReportStatus(report, 'DISMISSED', 'Report rejected', 'Failed to reject report');
+  }
+
+  cancelResolution(report: AdminReport): void {
+    this.updateReportStatus(report, 'PENDING', 'Resolution canceled', 'Failed to cancel resolution');
+  }
+
+  private updateReportStatus(
+    report: AdminReport,
+    status: 'PENDING' | 'RESOLVED' | 'DISMISSED',
+    successSummary: string,
+    errorSummary: string,
+  ): void {
+    this.adminService.resolveReport(report.id, status).subscribe({
       next: (updated) => {
         this.reports.update((list) => list.map((r) => r.id === updated.id ? updated : r));
-        this.messageService.add({ severity: 'success', summary: 'Report resolved', life: 3000 });
+        this.messageService.add({ severity: 'success', summary: successSummary, life: 3000 });
       },
-      error: () => this.messageService.add({ severity: 'error', summary: 'Failed', life: 3000 }),
+      error: (err) => this.messageService.add({
+        severity: 'error',
+        summary: errorSummary,
+        detail: err?.error?.message ?? `HTTP ${err?.status}`,
+        life: 4000,
+      }),
     });
   }
 

@@ -4,8 +4,8 @@ export interface DashboardStats {
   pendingUsers: number;
   suspendedUsers: number;
   disabledUsers: number;
-  newRegistrationsLast7Days: number;
-  newRegistrationsLast30Days: number;
+  registrationsLast7Days: number;
+  registrationsLast30Days: number;
   usersByRole: Record<string, number>;
   pendingReports: number;
   totalReports: number;
