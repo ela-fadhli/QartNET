@@ -29,6 +29,7 @@ public class ProjectPhaseEntity {
     @JoinColumn(name = "project_id")
     private ProjectEntity project;
 
+    @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTaskEntity> tasks = new ArrayList<>();

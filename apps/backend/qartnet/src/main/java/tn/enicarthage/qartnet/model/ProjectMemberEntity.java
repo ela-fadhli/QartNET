@@ -18,8 +18,10 @@ public class ProjectMemberEntity {
 
     private String initials;
     private String name;
-    private String specialty;
     private String role;
+    private String userId;
+    private String avatarUrl;
+    private String specialty;
 
     @JsonBackReference
     @ManyToOne

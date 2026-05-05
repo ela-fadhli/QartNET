@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = true
+	logallrefupdates = false
+[remote "origin"]
+	url = C:\\Users\\USER\\Desktop\\plateforme\\QartNET\\apps\\backend\\qartnet\\git-storage\\ahmed ben ahmed\\ML pipine.git
+	fetch = +refs/heads/*:refs/heads/*

@@ -1,21 +1,16 @@
 package tn.enicarthage.qartnet.controller;
 
 import tn.enicarthage.qartnet.service.GitStorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/test/git")
+@RequiredArgsConstructor
 public class GitTestController {
 
     private final GitStorageService gitStorageService;
-
-    public GitTestController(GitStorageService gitStorageService) {
-        this.gitStorageService = gitStorageService;
-    }
 
     @PostMapping("/init")
     public ResponseEntity<String> initRepository(@RequestParam String repoName) {

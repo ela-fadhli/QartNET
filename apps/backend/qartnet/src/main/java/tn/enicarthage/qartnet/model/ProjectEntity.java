@@ -25,20 +25,30 @@ public class ProjectEntity {
     @Column(length = 1000)
     private String description;
 
+    private Long repositoryId;
     private String repositoryName;
     private String deadline;
     private Integer progress;
     private Integer teamCount;
+    private String creatorName;
+    private String creatorUsername;
 
+    @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectPhaseEntity> phases = new ArrayList<>();
 
+    @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectMemberEntity> team = new ArrayList<>();
 
+    @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTimelineItemEntity> timeline = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "repository_fk")
+    private RepositoryEntity repository;
 }

@@ -3,18 +3,17 @@ package tn.enicarthage.qartnet.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import tn.enicarthage.qartnet.shared.enums.AccountStatus;
 import tn.enicarthage.qartnet.shared.enums.Role;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {

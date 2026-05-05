@@ -88,3 +88,36 @@
 .auth-btn:active {
   transform: scale(0.99) !important;
 }
+
+/* Custom Dialog Styling */
+.project-dialog .p-dialog-header {
+  background: #0D1221 !important;
+  color: #E8D5A3 !important;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1) !important;
+  font-family: 'Cinzel', serif !important;
+}
+
+.project-dialog .p-dialog-content {
+  background: #0D1221 !important;
+  color: #E8D5A3 !important;
+}
+
+.project-dialog .p-dialog-footer {
+  background: #0D1221 !important;
+  border-top: 1px solid rgba(201, 168, 76, 0.1) !important;
+}
+
+/* Custom SelectButton Styling */
+.custom-select-button .p-button {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(201, 168, 76, 0.2) !important;
+  color: #E8D5A3/50 !important;
+  font-size: 0.75rem !important;
+}
+
+.custom-select-button .p-button.p-highlight {
+  background: #C9A84C !important;
+  border-color: #C9A84C !important;
+  color: #0A0E1A !important;
+}
+

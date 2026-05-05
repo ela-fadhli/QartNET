@@ -19,8 +19,10 @@ public class GitServerConfig {
         GitServlet servlet = new GitServlet();
         servlet.setRepositoryResolver(repositoryResolver);
         
-        // La servlet écoutera sur toutes les URL commençant par /git/
         ServletRegistrationBean<GitServlet> bean = new ServletRegistrationBean<>(servlet, "/git/*");
+        // Activer le push (receivepack) et le pull (uploadpack)
+        bean.addInitParameter("http.getreceivepack", "true");
+        bean.addInitParameter("http.getuploadpack", "true");
         bean.setLoadOnStartup(1);
         return bean;
     }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -31,7 +30,7 @@ public abstract class BaseEntity {
     private LocalDateTime updatedAt;
 
     @PrePersist
-    protected void assignPublicId() {
+    public void assignPublicId() {
         if (publicId == null) publicId = UUID.randomUUID();
     }
 }

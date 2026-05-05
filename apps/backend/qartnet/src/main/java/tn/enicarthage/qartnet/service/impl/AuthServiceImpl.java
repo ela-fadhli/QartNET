@@ -1,6 +1,8 @@
 package tn.enicarthage.qartnet.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import tn.enicarthage.qartnet.dto.request.ForgotPasswordRequest;
 import tn.enicarthage.qartnet.dto.request.LoginRequest;
 import tn.enicarthage.qartnet.dto.request.RegisterRequest;
@@ -23,9 +27,6 @@ import tn.enicarthage.qartnet.security.JwtService;
 import tn.enicarthage.qartnet.service.AuthService;
 import tn.enicarthage.qartnet.service.EmailService;
 import tn.enicarthage.qartnet.shared.exception.ConflictException;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(request.lastName());
         user.setDateOfBirth(request.dateOfBirth());
         user.setPhoneNumber(request.phoneNumber());
+        user.assignPublicId();
         userRepository.save(user);
 
         Profile profile = new Profile();
@@ -68,7 +70,9 @@ public class AuthServiceImpl implements AuthService {
 
     private String generateUniqueUsername(String email) {
         String base = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9_]", "");
-        if (base.isEmpty()) base = "user";
+        if (base.isEmpty()) {
+            base = "user";
+        }
         String candidate = base;
         int attempt = 0;
         while (profileRepository.existsByUsername(candidate)) {

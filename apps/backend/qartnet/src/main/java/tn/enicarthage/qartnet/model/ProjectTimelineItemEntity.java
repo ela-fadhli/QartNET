@@ -16,13 +16,18 @@ public class ProjectTimelineItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @com.fasterxml.jackson.annotation.JsonProperty("date")
     private String date;
+    
+    @com.fasterxml.jackson.annotation.JsonProperty("title")
     private String title;
 
     @Column(length = 1000)
     private String description;
 
     private String status;
+    private String icon;
+    private String color;
 
     @JsonBackReference
     @ManyToOne

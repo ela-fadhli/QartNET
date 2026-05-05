@@ -3,6 +3,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "repository_commits")
 @Getter
@@ -20,6 +23,12 @@ public class RepositoryCommitEntity {
     private String message;
     private String author;
     private String date;
+    private Integer additions;
+    private Integer deletions;
+
+    @Transient
+    @Builder.Default
+    private List<String> modifiedPaths = new ArrayList<>();
 
     @JsonBackReference
     @ManyToOne
