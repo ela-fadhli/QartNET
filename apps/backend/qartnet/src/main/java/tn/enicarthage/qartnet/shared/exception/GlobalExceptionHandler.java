@@ -1,5 +1,7 @@
 package tn.enicarthage.qartnet.shared.exception;
 
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.mail.MailException;
 import tn.enicarthage.qartnet.shared.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,53 +12,82 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-/**
- * Central exception handler — all exceptions bubble up here and are
- * converted to consistent ApiResponse<Void> bodies.
- *
- * Add new exception types here as the project grows, rather than
- * handling them individually in each controller.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /** Bean Validation failures (@Valid on request bodies) */
+    // 400 — @Valid on request bodies
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
-            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.error("Validation failed"));
+    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest().body(ApiResponse.error(message));
     }
 
+    // 400 — @Validated on path/query params
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException ex) {
+        String message = ex.getConstraintViolations().stream()
+                .map(v -> v.getMessage())
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest().body(ApiResponse.error(message));
+    }
+
+    // 401
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("Invalid email or password"));
     }
 
+    // 403 — Spring Security
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error("Access denied"));
+                .body(ApiResponse.error("You do not have permission to perform this action"));
     }
 
+    // 403 — Domain
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    // 404
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    /** Catch-all — log unexpected errors server-side, return generic message to client */
+    // 409
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    // 500 — email delivery failure
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMailException(MailException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Failed to send email. Please try again later."));
+    }
+
+    // 503 — upstream LLM provider failure
+    @ExceptionHandler(LlmUnavailableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLlmUnavailable(LlmUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.error("AI assistant unavailable: " + ex.getMessage()));
+    }
+
+    // 500 — catch-all, never expose internals
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred"));
     }
-
 }

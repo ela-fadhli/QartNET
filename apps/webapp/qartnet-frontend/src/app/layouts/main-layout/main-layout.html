@@ -1,0 +1,114 @@
+<div class="flex h-screen bg-[#0A0E1A] overflow-hidden font-['DM_Sans',sans-serif]">
+
+  <!-- Sidebar -->
+  <aside class="w-60 flex flex-col border-r border-[#C9A84C]/10 bg-[#0D1221] shrink-0">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-5 h-14 border-b border-[#C9A84C]/10 shrink-0">
+      <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+        <polygon points="20,2 38,12 38,28 20,38 2,28 2,12" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+        <polygon points="20,9 31,15 31,25 20,31 9,25 9,15" stroke="#C9A84C" stroke-width="1" fill="#C9A84C" opacity="0.15"/>
+        <text x="20" y="24" text-anchor="middle" fill="#C9A84C" font-size="11" font-weight="600"
+              font-family="'Cinzel', serif" letter-spacing="1">Q</text>
+      </svg>
+      <span class="font-['Cinzel',serif] text-[#E8D5A3] font-semibold tracking-wider text-sm">QartNET</span>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex flex-col gap-0.5 p-3 flex-1 overflow-y-auto">
+
+      <a routerLink="/forum" routerLinkActive="nav-active"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E8D5A3]/60 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+        <i class="pi pi-comments text-base w-4 text-center"></i>
+        Forum
+      </a>
+
+      <a routerLink="/groups" routerLinkActive="nav-active"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E8D5A3]/60 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+        <i class="pi pi-users text-base w-4 text-center"></i>
+        Groups
+      </a>
+
+      <a routerLink="/messaging" routerLinkActive="nav-active"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E8D5A3]/60 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+        <i class="pi pi-envelope text-base w-4 text-center"></i>
+        Messaging
+      </a>
+
+      <a routerLink="/notifications" routerLinkActive="nav-active"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E8D5A3]/60 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+        <i class="pi pi-bell text-base w-4 text-center"></i>
+        Notifications
+      </a>
+
+      <div class="my-2 border-t border-[#C9A84C]/10"></div>
+
+      <a routerLink="/profile/me" routerLinkActive="nav-active"
+         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#E8D5A3]/60 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors text-sm cursor-pointer">
+        <i class="pi pi-user text-base w-4 text-center"></i>
+        My Profile
+      </a>
+
+    </nav>
+
+    <!-- Bottom user strip -->
+    <div class="border-t border-[#C9A84C]/10 p-3">
+      <button
+        (click)="toggleUserMenu($event)"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#C9A84C]/5 transition-colors text-left">
+        <p-avatar label="U" shape="circle" styleClass="!bg-[#C9A84C]/20 !text-[#C9A84C] !text-xs !w-8 !h-8" />
+        <div class="flex-1 min-w-0">
+          <p class="text-[#E8D5A3]/80 text-xs font-medium m-0 truncate">Account</p>
+        </div>
+        <i class="pi pi-chevron-up text-[#E8D5A3]/30 text-xs shrink-0"></i>
+      </button>
+      <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
+    </div>
+
+  </aside>
+
+  <!-- Main area -->
+  <div class="flex flex-col flex-1 overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-14 flex items-center gap-4 px-6 border-b border-[#C9A84C]/10 bg-[#0D1221] shrink-0">
+
+      <div class="flex-1 max-w-sm relative">
+        <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[#E8D5A3]/25 text-sm pointer-events-none"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          (keyup)="onSearch($event)"
+          class="w-full pl-9 pr-4 py-2 text-sm bg-[#0A0E1A] border border-[#C9A84C]/10 rounded-lg text-[#E8D5A3]/70 placeholder-[#E8D5A3]/25 focus:border-[#C9A84C]/40 focus:outline-none"
+        />
+      </div>
+
+      <div class="flex items-center gap-2 ml-auto">
+        <button
+          routerLink="/notifications"
+          class="relative w-9 h-9 flex items-center justify-center rounded-lg text-[#E8D5A3]/50 hover:text-[#E8D5A3] hover:bg-[#C9A84C]/5 transition-colors">
+          <i class="pi pi-bell text-base"></i>
+        </button>
+
+        <button
+          (click)="toggleUserMenu($event)"
+          class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[#C9A84C]/5 transition-colors">
+          <p-avatar label="U" shape="circle" styleClass="!bg-[#C9A84C]/20 !text-[#C9A84C] !text-xs !w-7 !h-7" />
+        </button>
+      </div>
+
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-6">
+      <router-outlet />
+    </main>
+
+  </div>
+
+  <app-ai-chatbot />
+
+</div>

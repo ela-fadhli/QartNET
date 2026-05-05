@@ -1,0 +1,93 @@
+<!-- Floating launcher -->
+<button
+  type="button"
+  (click)="toggle()"
+  [class]="'fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all bg-[#C9A84C] hover:bg-[#B89540] text-[#0A0E1A] ' + (open() ? 'rotate-45' : '')"
+  aria-label="Toggle AI assistant">
+  <i [class]="open() ? 'pi pi-times text-lg' : 'pi pi-sparkles text-lg'"></i>
+</button>
+
+<!-- Drawer -->
+@if (open()) {
+  <div class="fixed bottom-24 right-5 z-40 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-[#0D1221] border border-[#C9A84C]/15 rounded-2xl shadow-2xl flex flex-col overflow-hidden font-['DM_Sans',sans-serif]">
+
+    <header class="h-12 px-4 flex items-center justify-between border-b border-[#C9A84C]/10 shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="pi pi-sparkles text-[#C9A84C] text-sm"></i>
+        <h2 class="font-['Cinzel',serif] text-[#E8D5A3] text-xs tracking-wider">QartNET Assistant</h2>
+      </div>
+      <button
+        type="button"
+        (click)="reset()"
+        title="Start a new conversation"
+        class="text-[#E8D5A3]/40 hover:text-[#E8D5A3] text-xs flex items-center gap-1">
+        <i class="pi pi-refresh text-xs"></i>
+        New
+      </button>
+    </header>
+
+    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+      @if (loadingHistory()) {
+        <p class="text-[#E8D5A3]/40 text-xs">Loading history…</p>
+      } @else if (messages().length === 0) {
+        <div class="h-full flex flex-col items-center justify-center text-center px-4">
+          <i class="pi pi-sparkles text-[#C9A84C]/40 text-3xl mb-2"></i>
+          <p class="text-[#E8D5A3]/70 text-sm font-medium">Ask me anything</p>
+          <p class="text-[#E8D5A3]/40 text-xs mt-1">
+            I can help with coursework, code questions, or how to use QartNET.
+          </p>
+        </div>
+      } @else {
+        @for (msg of messages(); track msg.publicId) {
+          <div class="flex" [class.justify-end]="isUser(msg)">
+            <div [class]="isUser(msg)
+              ? 'max-w-[80%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed bg-[#C9A84C] text-[#0A0E1A]'
+              : 'max-w-[80%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed bg-[#0A0E1A] border border-[#C9A84C]/10 text-[#E8D5A3]'">
+              <p class="whitespace-pre-wrap break-words">{{ msg.content }}</p>
+            </div>
+          </div>
+        }
+        @if (sending()) {
+          <div class="flex">
+            <div class="rounded-2xl px-3 py-2 bg-[#0A0E1A] border border-[#C9A84C]/10 text-[#E8D5A3]/50 text-[13px]">
+              <span class="inline-flex gap-1">
+                <span class="animate-pulse">•</span>
+                <span class="animate-pulse" style="animation-delay:0.15s">•</span>
+                <span class="animate-pulse" style="animation-delay:0.3s">•</span>
+              </span>
+            </div>
+          </div>
+        }
+      }
+      <div #messagesEnd></div>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="px-4 py-2 text-xs text-red-300/80 bg-red-900/20 border-t border-red-900/30">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    <p class="px-4 py-1 text-[10px] text-[#E8D5A3]/30 border-t border-[#C9A84C]/10 text-center shrink-0">
+      AI may produce inaccurate information.
+    </p>
+
+    <div class="p-3 border-t border-[#C9A84C]/10 shrink-0">
+      <div class="flex gap-2 items-end">
+        <textarea
+          pInputText
+          rows="1"
+          placeholder="Ask anything..."
+          [formControl]="composer"
+          (keydown)="onComposerKey($event)"
+          class="flex-1 resize-none bg-[#0A0E1A] border border-[#C9A84C]/10 rounded-lg text-sm text-[#E8D5A3] placeholder-[#E8D5A3]/30 px-3 py-2 focus:border-[#C9A84C]/40 focus:outline-none">
+        </textarea>
+        <p-button
+          icon="pi pi-send"
+          [disabled]="sending() || !composer.value.trim()"
+          (onClick)="send()"
+          styleClass="!bg-[#C9A84C] !border-[#C9A84C] !text-[#0A0E1A] hover:!bg-[#B89540]" />
+      </div>
+    </div>
+  </div>
+}
