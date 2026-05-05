@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.5</version>
+        <version>4.0.5</version>
         <relativePath/>
     </parent>
     <groupId>tn.enicarthage</groupId>
@@ -28,10 +28,10 @@
         <url/>
     </scm>
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <jjwt.version>0.13.0</jjwt.version>
         <jgit.version>7.1.0.202411261347-r</jgit.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
     <dependencies>
         <dependency>
@@ -131,11 +131,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
                 <configuration>
-                    <release>17</release>
-                    <fork>true</fork>
-                    <executable>C:\Program Files\Java\jdk-17\bin\javac.exe</executable>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
